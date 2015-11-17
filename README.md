@@ -1,6 +1,8 @@
 # Sardroid server
 
-Simple NodeJS express app for brokering connections. run npm install and node server.js to start.
+Simple NodeJS express app for brokering connections. run npm install and npm start to start.
+
+Needs babel installed to work, see: https://babeljs.io
 
 Licence
 -------
