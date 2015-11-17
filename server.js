@@ -8,8 +8,6 @@ let port = process.ENV_PORT || 9000;
 
 let server = app.listen(port);
 
-
-
 let options = {
     debug: true,
     port: 9000,
@@ -27,7 +25,6 @@ ExpressPeerServer.on('disconnect', (id) => {
 });
 
 app.get('/', (req, res, next) => { res.send('Hello world!'); });
-
 
 app.use('/peerjs', ExpressPeerServer);
 
