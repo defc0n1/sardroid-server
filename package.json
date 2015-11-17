@@ -1,0 +1,24 @@
+{
+  "name": "sardroid-server",
+  "version": "0.0.1",
+  "description": "Server for brokering connections and misc for Sardroid",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/melonmanchan/sardroid-server.git"
+  },
+  "author": "Matti Jokitulppo <melonmanchan@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/melonmanchan/sardroid-server/issues"
+  },
+  "homepage": "https://github.com/melonmanchan/sardroid-server#readme",
+  "dependencies": {
+    "express": "^4.13.3",
+    "ip": "^1.0.2",
+    "peer": "^0.2.8"
+  }
+}
