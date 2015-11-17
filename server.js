@@ -5,7 +5,10 @@ import ip      from 'ip';
 
 let app = express();
 let port = process.ENV_PORT || 9000;
+
 let server = app.listen(port);
+
+
 
 let options = {
     debug: true,
@@ -15,15 +18,15 @@ let options = {
 
 let ExpressPeerServer = require('peer').ExpressPeerServer(server, options);
 
-app.get('/', (req, res, next) => { res.send('Hello world!'); });
-
-server.on('connection',  (id) => {
+ExpressPeerServer.on('connection',  (id) => {
     console.log('Connection from: ' +id);
 });
 
-server.on('disconnect', (id) => {
+ExpressPeerServer.on('disconnect', (id) => {
     console.log('Disconnection from: ' +id);
 });
+
+app.get('/', (req, res, next) => { res.send('Hello world!'); });
 
 
 app.use('/peerjs', ExpressPeerServer);
