@@ -11,8 +11,6 @@ let port = config.port;
 let peerJSOptions = config.peerJSOptions;
 let server = null;
 
-console.log(app)
-
 if (config.https.use === true) {
 
 } else {
