@@ -3,6 +3,10 @@
 import express from 'express';
 import ip      from 'ip';
 
+import { config }  from './utils/';
+
+console.log(config);
+
 let app = express();
 let port = process.ENV_PORT || 9000;
 
@@ -31,3 +35,4 @@ app.use('/peerjs', ExpressPeerServer);
 console.log(`Sardroid server running on: ${ip.address()}:${port}`);
 
 export default app;
+
