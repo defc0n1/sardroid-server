@@ -7,6 +7,11 @@ export default {
         privateKey:  '',
         cert:        '',
         ca:          ''
+    },
+    peerJSOptions: {
+        debug: true,
+        port: 9000,
+        allow_discovery: true
     }
 }
 

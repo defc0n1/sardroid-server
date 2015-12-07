@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+
+import ip    from 'ip';
+import http  from 'http';
+import https from 'https';
+
+import   app     from '../server.js';
+import { config } from '../utils';
+
+let port = config.port;
+let peerJSOptions = config.peerJSOptions;
+let server = null;
+
+console.log(app)
+
+if (config.https.use === true) {
+
+} else {
+    server = http.createServer(app).listen(port, () => {
+        console.log(`Sardroid server running on: ${ip.address()}:${port}`);
+    })
+}
+
+let ExpressPeerServer = require('peer').ExpressPeerServer(server, peerJSOptions);
+
+ExpressPeerServer.on('connection',  (id) => {
+    console.log('Connection from: ' +id);
+});
+
+ExpressPeerServer.on('disconnect', (id) => {
+    console.log('Disconnection from: ' +id);
+});
+
+app.use('/peerjs', ExpressPeerServer);
+
