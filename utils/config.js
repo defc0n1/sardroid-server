@@ -4,13 +4,13 @@ export default {
     port: process.ENV_PORT || 9000,
     https: {
         inUse:       new Boolean(process.env.USE_HTTPS || false),
-        privateKey:  '/etc/letsencrypt/live/mattij.com/privkey.pem',
-        cert:        '/etc/letsencrypt/live/mattij.com/cert.pem',
-        ca:          '/etc/letsencrypt/live/mattij.com/fullchain.pem'
+        privateKey:  process.env.PRIVATE_KEY || '/etc/letsencrypt/live/mattij.com/privkey.pem',
+        cert:        process.env.CERT        || '/etc/letsencrypt/live/mattij.com/cert.pem',
+        ca:          process.env.CA          || '/etc/letsencrypt/live/mattij.com/fullchain.pem'
     },
     peerJSOptions: {
         debug: true,
-        port: 9000,
+        port: process.ENV_PORT || 9000,
         allow_discovery: true
     }
 }

@@ -13,3 +13,4 @@ pkill -f "babel"
 pm2 start www
 
 exit 0
+
