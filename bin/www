@@ -5,7 +5,7 @@ import http  from 'http';
 import https from 'https';
 
 import   app     from '../server.js';
-import { config } from '../utils';
+import { config, createPeerJS } from '../utils';
 
 let port = config.port;
 let peerJSOptions = config.peerJSOptions;
@@ -21,15 +21,5 @@ if (config.https.use === true) {
     })
 }
 
-let ExpressPeerServer = require('peer').ExpressPeerServer(server, peerJSOptions);
-
-ExpressPeerServer.on('connection',  (id) => {
-    console.log('Connection from: ' +id);
-});
-
-ExpressPeerServer.on('disconnect', (id) => {
-    console.log('Disconnection from: ' +id);
-});
-
-app.use('/peerjs', ExpressPeerServer);
+createPeerJS(server, app);
 

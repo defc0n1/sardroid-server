@@ -5,8 +5,6 @@ import ip      from 'ip';
 
 import { config }  from './utils/';
 
-console.log(config);
-
 let app = express();
 let port = config.port;
 

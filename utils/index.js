@@ -1,6 +1,7 @@
 'use strict';
 
-import config  from './config';
+import config       from './config';
+import createPeerJS from './createPeerJS';
 
-export { config }
+export { config, createPeerJS }
 
