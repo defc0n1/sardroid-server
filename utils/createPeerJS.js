@@ -1,6 +1,6 @@
 'use strict';
 
-import  config  from './config';
+import config from './config';
 
 let peerJSOptions = config.peerJSOptions;
 
