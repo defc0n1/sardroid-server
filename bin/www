@@ -12,6 +12,8 @@ let port = config.port;
 let peerJSOptions = config.peerJSOptions;
 let server = null;
 
+console.log(config);
+
 if (config.https.inUse == true) {
     var ca = [];
     var cert = [];
