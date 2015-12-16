@@ -6,7 +6,7 @@ import https from 'https';
 import fs    from 'fs';
 
 import   app     from '../server.js';
-import { config, createPeerJS } from '../utils';
+import { config, createPeerJS, createSocketIO } from '../utils';
 
 let port = config.port;
 let peerJSOptions = config.peerJSOptions;
@@ -50,4 +50,5 @@ if (config.https.inUse == true) {
 }
 
 createPeerJS(server, app);
+createSocketIO(server, app);
 
