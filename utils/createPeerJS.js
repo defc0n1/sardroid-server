@@ -18,6 +18,7 @@ export default function (server, app) {
 
     ExpressPeerServer.on('disconnect', (id) => {
         console.log('PeerJS Disconnection from: ' + id);
+        io.emit('contact:offline', { peerJSId: id });
     });
 
     app.use('/peerjs', ExpressPeerServer);
