@@ -17,16 +17,26 @@ router.post('/verification', (req, res, next) => {
     let params = req.body;
 
     if (params.phoneNumber) {
-        var date = new Date();
-        date.setMinutes(date.getMinutes() + 60);
-        VerificationRequest.create({
-            phoneNumber:      params.phoneNumber,
-            verificationCode: Math.floor(Math.random()*90000) + 10000,
-            expireDate:       date,
-            beenUsed:         false
-        }).then( (vr) => {
-            res.status(201).json({message: 'Vefication request created'});
-        });
+
+        User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
+
+            if (user) {
+                res.status(400).json({error: 'User already exists'})
+                return next();
+            }
+
+            var date = new Date();
+            date.setMinutes(date.getMinutes() + 60);
+            VerificationRequest.create({
+                phoneNumber:      params.phoneNumber,
+                verificationCode: Math.floor(Math.random()*90000) + 10000,
+                expireDate:       date,
+                beenUsed:         false
+            }).then( (vr) => {
+                res.status(201).json({message: 'Vefication request created'});
+            }); 
+        })
+
     }
     else {
         res.status(400).json({error: 'Phone number is required!'});
@@ -68,6 +78,8 @@ router.post('/register', (req, res, next) => {
                     password:    hash
                 }).then((user) => {
                     res.json(user);
+                }).catch((err) => {
+                    res.status(500).json({error: err});
                 });
             })
 
