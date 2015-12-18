@@ -17,14 +17,13 @@ router.post('/verification', (req, res, next) => {
 
     if (params.phoneNumber) {
         var date = new Date();
-        date.setMinutes(date.getMinutes() + 1);
+        date.setMinutes(date.getMinutes() + 60);
         VerificationRequest.create({
             phoneNumber:      params.phoneNumber,
             verificationCode: Math.floor(Math.random()*90000) + 10000,
             expireDate:       date,
             beenUsed:         false
         }).then( (vr) => {
-            console.log(vr);
             res.status(201).json({message: 'Vefication request created'});
         });
     }
@@ -36,7 +35,7 @@ router.post('/verification', (req, res, next) => {
 router.post('/register', (req, res, next) => {
     let params = req.body;
 
-    if (params.phoneNumber && params.verificationCode) {
+    if (params.phoneNumber && params.verificationCode && params.password) {
         VerificationRequest.findOne({where: {
             verificationCode:  params.verificationCode,
             phoneNumber:       params.phoneNumber
@@ -47,16 +46,18 @@ router.post('/register', (req, res, next) => {
                 return next();
             }
 
-            if (vr.expireDate <= new Date()) {
-                res.status(400).json({error: 'Verification request is too old'});
+            var expireDate = new Date(vr.expireDate);
+
+            if (new Date() > expireDate) {
+                res.status(400).json({error: 'Verification request has expired'});
                 return next();
             }
 
-            if(vr.beenUsed === true) { 
+            if(vr.beenUsed === true) {
                 res.status(400).json({error: 'Verification code has been used'});
                 return next();
             }
-
+            res.json(vr);
             vr.update({beenUsed: true}).then( (vr) => {
                 res.json(vr);
             })
