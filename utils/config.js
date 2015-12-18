@@ -13,6 +13,14 @@ export default {
         port:            process.env.PORT || 9000,
         allow_discovery: true,
         proxied:         (process.env.IS_PROXIED == 'true')
+    },
+    db: {
+            host:     process.env.POSTGRES_HOST    || 'localhost',
+            user:     process.env.POSTGRES_USER    || 'postgres',
+            password: process.env.POSTGRES_PW      || 'supersalainensalasana',
+            database: process.env.POSTGRES_DB      || 'soar',
+            charset:  process.env.POSTGRES_CHARSET || 'utf8',
+            dialect: 'postgres'
     }
 }
 
