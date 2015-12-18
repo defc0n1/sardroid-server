@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/melonmanchan/sardroid-server#readme",
   "dependencies": {
+    "body-parser": "^1.14.2",
     "express": "^4.13.3",
     "ip": "^1.0.2",
     "peer": "^0.2.8",

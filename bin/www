@@ -13,7 +13,7 @@ let port = config.port;
 let peerJSOptions = config.peerJSOptions;
 let server = null;
 
-models.sequelize.sync().then(() => {
+models.sequelize.sync({force: true}).then(() => {
     if (config.https.inUse == true) {
         var ca = [];
         var cert = [];
