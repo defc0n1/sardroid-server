@@ -1,6 +1,7 @@
 'use strict';
 
 import express from 'express';
+import bcrypt   from 'bcryptjs';
 import models  from '../models';
 
 let User                = models.Soar_user;
@@ -57,12 +58,21 @@ router.post('/register', (req, res, next) => {
                 res.status(400).json({error: 'Verification code has been used'});
                 return next();
             }
-            res.json(vr);
+
             vr.update({beenUsed: true}).then( (vr) => {
-                res.json(vr);
+                let salt = bcrypt.genSaltSync(10);
+                var hash = bcrypt.hashSync(params.password, salt);
+
+                User.create({
+                    phoneNumber: vr.phoneNumber,
+                    password:    hash
+                }).then((user) => {
+                    res.json(user);
+                });
             })
 
         })
+
     } else {
         res.status(400).json({error: 'Missing required parameters'});
     }
