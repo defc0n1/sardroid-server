@@ -56,7 +56,7 @@ router.post('/register', (req, res, next) => {
                 return next();
             }
 
-            var expireDate = new Date(vr.expireDate);
+            let expireDate = new Date(vr.expireDate);
 
             if (new Date() > expireDate) {
                 res.status(400).json({error: 'Verification request has expired'});
@@ -70,7 +70,7 @@ router.post('/register', (req, res, next) => {
 
             vr.update({beenUsed: true}).then( (vr) => {
                 let salt = bcrypt.genSaltSync(10);
-                var hash = bcrypt.hashSync(params.password, salt);
+                let hash = bcrypt.hashSync(params.password, salt);
 
                 User.create({
                     phoneNumber: vr.phoneNumber,
@@ -86,6 +86,36 @@ router.post('/register', (req, res, next) => {
 
     } else {
         res.status(400).json({error: 'Missing required parameters'});
+    }
+});
+
+router.post('/login', (req, res, next) => {
+
+    let params = req.body;
+
+    if (params.phoneNumber && params.password) {
+        User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
+
+            if (!user) {
+                res.status(404).json({error: 'User not found'})
+                return next();
+            }
+
+            bcrypt.compare(params.password, user.password, (err, res) => {
+
+                if (err) {
+                    res.status(500).json({error: 'Error: ' + err});
+                }
+
+                if (res === false) {
+                    res.status(401).json({error: 'Wrong password!'});
+                }
+            })
+        })
+
+    }
+    else {
+        res.status(400).json({error: 'Phone number and password are required!'});
     }
 });
 
