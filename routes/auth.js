@@ -7,6 +7,8 @@ import jwt     from 'jsonwebtoken';
 import models  from '../models';
 import { config }  from '../utils';
 
+import { verifyJWT } from '../middleware';
+
 let User                = models.Soar_user;
 let VerificationRequest = models.Soar_verification_request;
 

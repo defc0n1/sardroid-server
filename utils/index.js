@@ -2,7 +2,8 @@
 
 import config         from './config';
 import createPeerJS   from './createPeerJS';
+import decodeJWT      from './decodeJWT';
 import { createSocketIO } from './socketIO';
 
-export { config, createPeerJS, createSocketIO }
+export { config, createPeerJS, decodeJWT, createSocketIO }
 

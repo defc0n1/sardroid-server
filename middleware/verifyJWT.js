@@ -1,28 +1,26 @@
 'use strict'
 
-import jwt from 'jsonwebtoken';
-import { config } from '../utils';
+import { config, decodeJWT } from '../utils';
 
 export default function verifyJWT(req, res, next)  {
-    let token = req.headers['Authorization']
+    console.log(req.headers);
+    let token = req.headers['authorization']
 
     if (!token) {
         res.status(400).json({error: 'Token is missing'})
-        res.end();
+        return;
     }
 
     token = token.replace('Bearer: ', '');
 
-    jwt.verify(token, config.jwt_secret, (err, decoded) => {
-        console.log(err);
-        console.log(decoded);
-        if (err) {
+    decodeJWT(token)
+        .then(results => {
+            req.user = results;
+            next();
+        })
+        .catch( err => {
             res.status(400).json({error: 'Error: ' + err})
             res.end();
-        } else {
-            req.user = decoded.user;
-            next();
-        }
-    })
+        })
 };
 
