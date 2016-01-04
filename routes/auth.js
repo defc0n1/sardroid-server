@@ -5,7 +5,7 @@ import bcrypt  from 'bcryptjs';
 import jwt     from 'jsonwebtoken';
 
 import models  from '../models';
-import config  from '../utils';
+import { config }  from '../utils';
 
 let User                = models.Soar_user;
 let VerificationRequest = models.Soar_verification_request;
@@ -102,28 +102,28 @@ router.post('/login', (req, res, next) => {
                 return next();
             }
 
-            bcrypt.compare(params.password, user.password, (err, res) => {
+            bcrypt.compare(params.password, user.password, (err, response) => {
 
                 if (err) {
                     res.status(500).json({error: 'Error: ' + err});
                     return next();
                 }
 
-                if (res === false) {
+                if (response === false) {
                     res.status(401).json({error: 'Wrong password!'});
                     return next();
                 }
 
-                jwt.sign(user, config.JWT_SECRET, {
+                jwt.sign(user, config.jwt_secret, {
                     issuer:    user.phoneNumber,
                     expiresIn: '7 days'
                 }, token => {
 
                     user.update({ token: token })
-                    ,success(() => {
+                    .then(() => {
                         res.status(200).json(user);
                     })
-                    .error( err => {
+                    .catch( err => {
                         res.status(500).json({error: 'Error: ' + err});
                     });
 
