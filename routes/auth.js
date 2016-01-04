@@ -114,6 +114,8 @@ router.post('/login', (req, res, next) => {
                     return next();
                 }
 
+                user.password = null;
+
                 jwt.sign(user, config.jwt_secret, {
                     issuer:    user.phoneNumber,
                     expiresIn: '7 days'
