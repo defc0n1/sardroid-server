@@ -5,6 +5,7 @@ import bcrypt  from 'bcryptjs';
 import jwt     from 'jsonwebtoken';
 
 import models  from '../models';
+import config  from '../utils';
 
 let User                = models.Soar_user;
 let VerificationRequest = models.Soar_verification_request;
@@ -105,11 +106,28 @@ router.post('/login', (req, res, next) => {
 
                 if (err) {
                     res.status(500).json({error: 'Error: ' + err});
+                    return next();
                 }
 
                 if (res === false) {
                     res.status(401).json({error: 'Wrong password!'});
+                    return next();
                 }
+
+                jwt.sign(user, config.JWT_SECRET, {
+                    issuer:    user.phoneNumber,
+                    expiresIn: '7 days'
+                }, token => {
+
+                    user.update({ token: token })
+                    ,success(() => {
+                        res.status(200).json(user);
+                    })
+                    .error( err => {
+                        res.status(500).json({error: 'Error: ' + err});
+                    });
+
+                })
             })
         })
 
