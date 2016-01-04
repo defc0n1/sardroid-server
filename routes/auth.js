@@ -1,14 +1,13 @@
 'use strict';
 
 import express from 'express';
-import bcrypt   from 'bcryptjs';
+import bcrypt  from 'bcryptjs';
+import jwt     from 'jsonwebtoken';
+
 import models  from '../models';
 
 let User                = models.Soar_user;
 let VerificationRequest = models.Soar_verification_request;
-
-console.log(User);
-console.log(VerificationRequest);
 
 let router = express.Router();
 
