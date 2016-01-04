@@ -35,7 +35,7 @@ router.post('/verification', (req, res, next) => {
                 expireDate:       date,
                 beenUsed:         false
             }).then( (vr) => {
-                res.status(201).json({message: 'Vefication request created'});
+                res.status(201).json({message: 'Verification request created'});
             }); 
         })
 
