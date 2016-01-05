@@ -1,5 +1,7 @@
 'use strict';
 
+import chalk from 'chalk';
+
 /*
  * Socket.io related things go here!
  */
@@ -10,19 +12,18 @@ let connections = [];
 
 function createSocketIO(server, app) {
     io = require('socket.io')(server);
-    
+ 
     io.on('connection', (socket) => {
-        console.log(`Socket connected with id ${socket.id}`);
+        console.log(chalk.green(`Socket connected with id ${socket.id}`));
         connections.push(socket);
 
         socket.on('disconnect', () => {
-            console.log(`Socket disconnected with id ${socket.id}`);
+            console.log(chalk.yellow(`Socket disconnected with id ${socket.id}`));
 
             var i = connections.indexOf(socket);
             connections.splice(i, 1);
         });
 
-        socket.emit('sockettest', {'hello': 'world'});
     });
 }
 
