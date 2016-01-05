@@ -1,6 +1,7 @@
 'use strict';
 
 import chalk from 'chalk'
+import dateformat from 'dateformat'
 
 const LOG_TYPES = {
     INFO  : chalk.green,
@@ -9,7 +10,9 @@ const LOG_TYPES = {
 };
 
 function log(message, type=LOG_TYPES.INFO) {
-   console.log(type(message));
+    let now = Date();
+    let timeStamp = dateformat(now, '[HH:MM:ss dd/mm/yyyy] ')
+    console.log(type(timeStamp + message));
 }
 
 export { LOG_TYPES, log }

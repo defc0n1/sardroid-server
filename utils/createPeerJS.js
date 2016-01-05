@@ -12,7 +12,7 @@ export default function (server, app) {
     let ExpressPeerServer = require('peer').ExpressPeerServer(server, peerJSOptions);
 
     ExpressPeerServer.on('connection',  (id) => {
-        log('PeerJS Connection from: ' + id, LOG_TYPES.WARN);
+        log('PeerJS Connection from: ' + id);
 
         //TODO: Proper way of doing online contacts, not this!
         io.emit('contact:online', { peerJSId: id });
