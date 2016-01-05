@@ -29,6 +29,7 @@ router.post('/verification', (req, res, next) => {
 
             var date = new Date();
             date.setMinutes(date.getMinutes() + 60);
+
             VerificationRequest.create({
                 phoneNumber:      params.phoneNumber,
                 verificationCode: Math.floor(Math.random()*90000) + 10000,

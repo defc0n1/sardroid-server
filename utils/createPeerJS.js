@@ -1,6 +1,6 @@
 'use strict';
 
-import chalk from 'chalk';
+import { log, LOG_TYPES } from './log';
 
 import config from './config';
 
@@ -12,14 +12,14 @@ export default function (server, app) {
     let ExpressPeerServer = require('peer').ExpressPeerServer(server, peerJSOptions);
 
     ExpressPeerServer.on('connection',  (id) => {
-        console.log(chalk.green('PeerJS Connection from: ' + id));
+        log('PeerJS Connection from: ' + id, LOG_TYPES.WARN);
 
         //TODO: Proper way of doing online contacts, not this!
         io.emit('contact:online', { peerJSId: id });
     });
 
     ExpressPeerServer.on('disconnect', (id) => {
-        console.log(chalk.yellow('PeerJS Disconnection from: ' + id));
+        log('PeerJS Disconnection from: ' + id, LOG_TYPES.WARN);
     });
 
     app.use('/peerjs', ExpressPeerServer);

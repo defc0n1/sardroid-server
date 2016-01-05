@@ -1,9 +1,9 @@
 'use strict';
 
-import chalk from 'chalk';
+import { log, LOG_TYPES } from './log';
 
 /*
- * Socket.io related things go here!
+ * Socket.io related things go !
  */
 
 let io;
@@ -14,11 +14,11 @@ function createSocketIO(server, app) {
     io = require('socket.io')(server);
  
     io.on('connection', (socket) => {
-        console.log(chalk.green(`Socket connected with id ${socket.id}`));
+        log(`Socket connected with id ${socket.id}`);
         connections.push(socket);
 
         socket.on('disconnect', () => {
-            console.log(chalk.yellow(`Socket disconnected with id ${socket.id}`));
+            log(`Socket disconnected with id ${socket.id}`, LOG_TYPES.WARN);
 
             var i = connections.indexOf(socket);
             connections.splice(i, 1);
