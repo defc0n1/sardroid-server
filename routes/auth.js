@@ -79,6 +79,7 @@ router.post('/register', (req, res, next) => {
                     phoneNumber: vr.phoneNumber,
                     password:    hash
                 }).then((user) => {
+                    delete user.password;
                     res.json(user);
                 }).catch((err) => {
                     res.status(500).json({error: err});
