@@ -1,10 +1,20 @@
 'use strict';
 
-import { log, LOG_TYPES } from './log';
-import decodeJWT          from './decodeJWT';
 /*
  * Socket.io related things go !
  */
+
+import { log, LOG_TYPES } from './log';
+import decodeJWT          from './decodeJWT';
+
+const EVENT_TYPES = {
+    DISCONNECT      : 'disconnect',
+    CONNECTION      : 'connection',
+    TOKEN_VALID     : 'token_valid',
+    TOKEN_INVALID   : 'token_invalid',
+    CONTACT_ONLINE  : 'contact:online',
+    CONTACT_OFFLINE : 'contact:offline'
+};
 
 let io;
 
@@ -13,9 +23,9 @@ let connections = [];
 function createSocketIO(server, app) {
     io = require('socket.io')(server);
 
-    io.on('connection', (socket) => {
+    io.on(EVENT_TYPES.CONNECTION, (socket) => {
 
-        socket.on('disconnect', () => {
+        socket.on(EVENT_TYPES.DISCONNECT, () => {
             log(`Socket disconnected with id ${socket.id}`, LOG_TYPES.WARN);
 
             var i = connections.indexOf(socket);
@@ -39,5 +49,5 @@ function createSocketIO(server, app) {
 }
 
 
-export { io, connections, createSocketIO }
+export { io, connections, createSocketIO, EVENT_TYPES }
 
