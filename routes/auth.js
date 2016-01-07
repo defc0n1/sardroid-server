@@ -79,7 +79,7 @@ router.post('/register', (req, res, next) => {
                     phoneNumber: vr.phoneNumber,
                     password:    hash
                 }).then((user) => {
-                    delete user.password;
+                    delete user.dataValues.password;
                     res.json(user);
                 }).catch((err) => {
                     res.status(500).json({error: err});
@@ -117,7 +117,8 @@ router.post('/login', (req, res, next) => {
                     return next();
                 }
 
-                delete user.password;
+                delete user.dataValues.password;
+                delete user.dataValues.token;
                 jwt.sign(user, config.jwt_secret, {
                     issuer:    user.phoneNumber,
                     expiresIn: '7 days'
@@ -125,7 +126,7 @@ router.post('/login', (req, res, next) => {
 
                     user.update({ token: token })
                     .then(() => {
-                        delete user.password;
+                        delete user.dataValues.password;
                         res.status(200).json({user});
                     })
                     .catch( err => {
