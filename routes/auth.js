@@ -117,8 +117,7 @@ router.post('/login', (req, res, next) => {
                     return next();
                 }
 
-                user.password = null;
-
+                delete user.password;
                 jwt.sign(user, config.jwt_secret, {
                     issuer:    user.phoneNumber,
                     expiresIn: '7 days'
@@ -126,7 +125,8 @@ router.post('/login', (req, res, next) => {
 
                     user.update({ token: token })
                     .then(() => {
-                        res.status(200).json(user);
+                        delete user.password;
+                        res.status(200).json({user});
                     })
                     .catch( err => {
                         res.status(500).json({error: 'Error: ' + err});
