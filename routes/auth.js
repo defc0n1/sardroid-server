@@ -1,8 +1,9 @@
 'use strict';
 
-import express from 'express';
-import bcrypt  from 'bcryptjs';
-import jwt     from 'jsonwebtoken';
+import express      from 'express';
+import bcrypt       from 'bcryptjs';
+import jwt          from 'jsonwebtoken';
+import randomstring from 'randomstring';
 
 import models  from '../models';
 import { config }  from '../utils';
@@ -32,7 +33,7 @@ router.post('/verification', (req, res, next) => {
 
             VerificationRequest.create({
                 phoneNumber:      params.phoneNumber,
-                verificationCode: Math.floor(Math.random()*90000) + 10000,
+                verificationCode: randomstring.generate(6),
                 expireDate:       date,
                 beenUsed:         false
             }).then( (vr) => {
