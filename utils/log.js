@@ -12,7 +12,7 @@ const LOG_TYPES = {
 function log(message, type=LOG_TYPES.INFO) {
     let now = Date();
     let timeStamp = dateformat(now, '[HH:MM:ss dd/mm/yyyy] ')
-    console.log(type(timeStamp + message));
+    console.log(timeStamp + type(message));
 }
 
 export { LOG_TYPES, log }
