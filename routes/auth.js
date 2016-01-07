@@ -49,10 +49,9 @@ router.post('/verification', (req, res, next) => {
 router.post('/register', (req, res, next) => {
     let params = req.body;
 
-    if (params.phoneNumber && params.verificationCode && params.password) {
+    if (params.verificationCode && params.password) {
         VerificationRequest.findOne({where: {
-            verificationCode:  params.verificationCode,
-            phoneNumber:       params.phoneNumber
+            verificationCode:  params.verificationCode, 
         }}).then(function (vr) {
 
             if (!vr) {
