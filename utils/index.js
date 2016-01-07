@@ -6,5 +6,5 @@ import decodeJWT          from './decodeJWT';
 import { log, LOG_TYPES}  from './log';
 import { createSocketIO } from './socketIO';
 
-export { config, createPeerJS, decodeJWT, createSocketIO }
+export { config, createPeerJS, decodeJWT, createSocketIO, log, LOG_TYPES }
 

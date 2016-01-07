@@ -5,15 +5,15 @@ import http  from 'http';
 import https from 'https';
 import fs    from 'fs';
 
-import   app     from '../server.js';
-import { config, createPeerJS, createSocketIO } from '../utils';
+import   app    from '../server.js';
+import { config, log, createPeerJS, createSocketIO } from '../utils';
 import models from '../models';
 
 let port = config.port;
 let peerJSOptions = config.peerJSOptions;
 let server = null;
 
-models.sequelize.sync({force: true}).then(() => {
+models.sequelize.sync({force: false}).then(() => {
     if (config.https.inUse == true) {
         var ca = [];
         var cert = [];
@@ -40,12 +40,12 @@ models.sequelize.sync({force: true}).then(() => {
         };
 
         server = https.createServer(credentials, app).listen(port, () => {
-            console.log(`HTTPS Sardroid server running on: ${ip.address()}:${port}`);
+            log(`HTTPS Sardroid server running on: https://${ip.address()}:${port}`);
         });
 
     } else {
         server = http.createServer(app).listen(port, () => {
-            console.log(`Sardroid server running on: ${ip.address()}:${port}`);
+            log(`Sardroid server running on: http://${ip.address()}:${port}`);
         })
     }
     createPeerJS(server, app);
