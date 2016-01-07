@@ -1,7 +1,7 @@
 'use strict';
 
 import { log, LOG_TYPES } from './log';
-
+import decodeJWT          from './decodeJWT';
 /*
  * Socket.io related things go !
  */
@@ -12,10 +12,8 @@ let connections = [];
 
 function createSocketIO(server, app) {
     io = require('socket.io')(server);
- 
+
     io.on('connection', (socket) => {
-        log(`Socket connected with id ${socket.id}`);
-        connections.push(socket);
 
         socket.on('disconnect', () => {
             log(`Socket disconnected with id ${socket.id}`, LOG_TYPES.WARN);
@@ -24,6 +22,17 @@ function createSocketIO(server, app) {
             connections.splice(i, 1);
         });
 
+        decodeJWT(socket.handshake.query.token)
+            .then( results => {
+                log(`Socket connected with id ${socket.id}`);
+                socket.user = results;
+                connections.push(socket);
+            })
+            .catch(error => {
+                console.log('token is invalid');
+                socket.emit('token_invalid', {}); 
+                socket.disconnect(true);
+            })
     });
 }
 
