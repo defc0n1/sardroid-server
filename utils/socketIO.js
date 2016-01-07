@@ -25,12 +25,14 @@ function createSocketIO(server, app) {
         decodeJWT(socket.handshake.query.token)
             .then( results => {
                 log(`Socket connected with id ${socket.id}`);
+                socket.emit('token_valid',  {});
                 socket.user = results;
                 connections.push(socket);
+
             })
             .catch(error => {
-                console.log('token is invalid');
-                socket.emit('token_invalid', {}); 
+                log(`Token from ${socket.id} is invalid`, LOG_TYPES.ALERT)
+                socket.emit('token_invalid', {});
                 socket.disconnect(true);
             })
     });
