@@ -5,10 +5,10 @@ import bcrypt       from 'bcryptjs';
 import jwt          from 'jsonwebtoken';
 import randomstring from 'randomstring';
 
-import models  from '../models';
-import { config }  from '../utils';
-
-import { verifyJWT } from '../middleware';
+import models            from '../models';
+import { config }        from '../utils';
+import { AUTH, GENERIC } from '../utils/errorTypes.js';
+import { verifyJWT }     from '../middleware';
 
 let User                = models.Soar_user;
 let VerificationRequest = models.Soar_verification_request;
@@ -24,7 +24,7 @@ router.post('/verification', (req, res, next) => {
         User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
 
             if (user) {
-                res.status(400).json({error: 'User already exists'})
+                res.err(400, AUTH.VERIFICATION.USER_EXISTS, 'User already exists')
                 return next();
             }
 
@@ -38,12 +38,12 @@ router.post('/verification', (req, res, next) => {
                 beenUsed:         false
             }).then( (vr) => {
                 res.status(201).json({message: 'Verification request created'});
-            }); 
+            });
         })
 
     }
     else {
-        res.status(400).json({error: 'Phone number is required!'});
+        res.err(400, AUTH.VERIFICATION.NUMBER_MISSING,  'Phone number is required!')
     }
 });
 
@@ -56,19 +56,19 @@ router.post('/register', (req, res, next) => {
         }}).then(function (vr) {
 
             if (!vr) {
-                res.status(404).json({error: 'No verification request found'})
+                res.err(404, AUTH.REGISTER.NO_VERIFICATION, 'No verification request found');
                 return next();
             }
 
             let expireDate = new Date(vr.expireDate);
 
             if (new Date() > expireDate) {
-                res.status(400).json({error: 'Verification request has expired'});
+                res.err(400, AUTH.REGISTER.VERIFICATION_EXPIRED, 'Verification request has expired')
                 return next();
             }
 
             if(vr.beenUsed === true) {
-                res.status(400).json({error: 'Verification code has been used'});
+                res.err(400, AUTH.REGISTER.VERIFICATION_USED, 'Verification code has been used')
                 return next();
             }
 
@@ -83,14 +83,14 @@ router.post('/register', (req, res, next) => {
                     delete user.dataValues.password;
                     res.json(user);
                 }).catch((err) => {
-                    res.status(500).json({error: err});
+                    res.err(500, AUTH.REGISTER.REGISTER_FAILED, err)
                 });
             })
 
         })
 
     } else {
-        res.status(400).json({error: 'Missing required parameters'});
+        res.err(400, GENERIC.MISSING_PARAMS, 'Missing required parameters')
     }
 });
 
@@ -102,19 +102,19 @@ router.post('/login', (req, res, next) => {
         User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
 
             if (!user) {
-                res.status(404).json({error: 'User not found'})
+                res.err(404, AUTH.LOGIN.USER_NOT_FOUND, 'User not found')
                 return next();
             }
 
             bcrypt.compare(params.password, user.password, (err, response) => {
 
                 if (err) {
-                    res.status(500).json({error: 'Error: ' + err});
+                    res.err(500, GENERIC.LOGIN.BCRYPT_ERROR, err)
                     return next();
                 }
 
                 if (response === false) {
-                    res.status(401).json({error: 'Wrong password!'});
+                    res.err(401, AUTH.LOGIN.WRONG_PASSWORD, 'Wrong password!')
                     return next();
                 }
 
@@ -131,7 +131,7 @@ router.post('/login', (req, res, next) => {
                         res.status(200).json({user});
                     })
                     .catch( err => {
-                        res.status(500).json({error: 'Error: ' + err});
+                        res.err(500, GENERIC.UNSPECIFIED_ERROR, err)
                     });
 
                 })
@@ -140,7 +140,7 @@ router.post('/login', (req, res, next) => {
 
     }
     else {
-        res.status(400).json({error: 'Phone number and password are required!'});
+        res.err(400, GENERIC.MISSING_PARAMS, 'Phone number and password are required!' )
     }
 });
 
