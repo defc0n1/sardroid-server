@@ -25,7 +25,8 @@ const AUTH = {
  * Misc. generic error types
  */
 const GENERIC = {
-    MISSING_PARAMS: 'missing_params'
+    MISSING_PARAMS    : 'missing_params',
+    UNSPECIFIED_ERROR : 'unspecified_error'
 }
 
 export { AUTH, GENERIC }
