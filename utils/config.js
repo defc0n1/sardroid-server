@@ -22,6 +22,10 @@ export default {
             database : process.env.POSTGRES_DB      || 'soar',
             charset  : process.env.POSTGRES_CHARSET || 'utf8',
             dialect  : 'postgres'
+    },
+    twilio: {
+            accountSid : process.env.TWILIO_SID   || '',
+            authToken  : process.env.TWILIO_TOKEN || ''
     }
 }
 
