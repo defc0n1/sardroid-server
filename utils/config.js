@@ -24,8 +24,9 @@ export default {
             dialect  : 'postgres'
     },
     twilio: {
-            accountSid : process.env.TWILIO_SID   || '',
-            authToken  : process.env.TWILIO_TOKEN || ''
+            accountSid   : process.env.TWILIO_SID    || '',
+            authToken    : process.env.TWILIO_TOKEN  || '',
+            twilioNumber : process.env.TWILIO_NUMBER || ''
     }
 }
 

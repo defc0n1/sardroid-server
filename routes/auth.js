@@ -1,9 +1,10 @@
 'use strict';
 
-import express      from 'express';
 import bcrypt       from 'bcryptjs';
+import express      from 'express';
 import jwt          from 'jsonwebtoken';
 import randomstring from 'randomstring';
+import twilio       from 'twilio';
 
 import models            from '../models';
 import { config }        from '../utils';
@@ -14,6 +15,8 @@ let User                = models.Soar_user;
 let VerificationRequest = models.Soar_verification_request;
 
 let router = express.Router();
+
+let twilioClient = new twilio.RestClient(config.twilio.accountSid, config.twilio.authToken);
 
 router.post('/verification', (req, res, next) => {
 
@@ -28,16 +31,27 @@ router.post('/verification', (req, res, next) => {
                 return next();
             }
 
-            var date = new Date();
+            let date = new Date();
             date.setMinutes(date.getMinutes() + 60);
 
+            let verificationCode = randomstring.generate(6);
             VerificationRequest.create({
                 phoneNumber:      params.phoneNumber,
-                verificationCode: randomstring.generate(6),
+                verificationCode: verificationCode,
                 expireDate:       date,
                 beenUsed:         false
             }).then( (vr) => {
-                res.status(201).json({message: 'Verification request created'});
+                twilioClient.messages.create({
+                        to   : vr.phoneNumber,
+                        from : config.twilio.twilioNumber,
+                        body : `Your verification code is ${verificationCode}`
+                    }, function(error, message) {
+                        if (error) {
+                            console.log(error.message);
+                        } else {
+                            res.status(201).json({message: 'Verification request created'});
+                        }
+                    });
             });
         })
 
