@@ -15,12 +15,12 @@ export default function (server, app) {
         log('PeerJS Connection from: ' + id);
 
         //TODO: Proper way of doing online contacts, not this!
-        io.emit(EVENT_TYPES.CONTACT_ONLINE, { peerJSId: '+' + id });
+        io.emit(EVENT_TYPES.CONTACT_ONLINE, { peerJSId: id });
     });
 
     ExpressPeerServer.on('disconnect', (id) => {
         log('PeerJS Disconnection from: ' + id, LOG_TYPES.WARN);
-        io.emit(EVENT_TYPES.CONTACT_OFFLINE, { peerJSId: '+' + id });
+        io.emit(EVENT_TYPES.CONTACT_OFFLINE, { peerJSId: id });
     });
 
     app.use('/peerjs', ExpressPeerServer);
