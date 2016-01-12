@@ -18,6 +18,9 @@ const AUTH = {
         USER_NOT_FOUND : 'user_not_found',
         BCRYPT_ERROR   : 'bcrypt_error',
         WRONG_PASSWORD : 'wrong_password'
+    },
+    LOGOUT          : {
+        USER_NOT_FOUND : 'user_not_found'
     }
 }
 

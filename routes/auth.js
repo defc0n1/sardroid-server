@@ -158,5 +158,20 @@ router.post('/login', (req, res, next) => {
     }
 });
 
+router.delete('/logout', verifyJWT,  (req, res, next) => {
+
+    User.findOne({ where: { id: req.user.id }})
+        .then( user => {
+            user.update({ token: null })
+        })
+        .then( results => {
+            res.status(200).json({ message: 'Logged out succesfully' })
+        })
+        .catch(err => {
+            console.log(err);
+            res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found')
+        })
+});
+
 export default router
 
