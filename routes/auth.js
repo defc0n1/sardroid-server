@@ -9,6 +9,7 @@ import twilio       from 'twilio';
 import models            from '../models';
 import { config }        from '../utils';
 import { AUTH, GENERIC } from '../utils/errorTypes.js';
+import {VERIFICATION_TYPES} from '../utils/errorTypes.js';
 import { verifyJWT }     from '../middleware';
 
 let User                = models.Soar_user;
@@ -22,11 +23,11 @@ router.post('/verification', (req, res, next) => {
 
     let params = req.body;
 
-    if (params.phoneNumber) {
+    if (params.phoneNumber && params.verificationType) {
 
         User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
 
-            if (user) {
+            if (user && params.verificationType === VERIFICTION_TYPES.REGISTER) {
                 res.err(400, AUTH.VERIFICATION.USER_EXISTS, 'User already exists')
                 return next();
             }
@@ -41,7 +42,9 @@ router.post('/verification', (req, res, next) => {
                 expireDate:       date,
                 beenUsed:         false
             }).then( (vr) => {
-                twilioClient.messages.create({
+                console.log(verificationCode);
+                    res.status(201).json({message: 'Verification request created'});
+                /* twilioClient.messages.create({
                         to   : vr.phoneNumber,
                         from : config.twilio.twilioNumber,
                         body : `Your verification code is ${verificationCode}`
@@ -51,7 +54,7 @@ router.post('/verification', (req, res, next) => {
                         } else {
                             res.status(201).json({message: 'Verification request created'});
                         }
-                    });
+                    });*/
             });
         })
 
@@ -158,8 +161,52 @@ router.post('/login', (req, res, next) => {
     }
 });
 
-router.delete('/logout', verifyJWT,  (req, res, next) => {
+router.post('/resetpw',  (req, res, next) => {
+    let params = req.body;
+    if (params.verificationCode && params.password) {
+        VerificationRequest.findOne({where: {
+            verificationCode:  params.verificationCode
+        }}).then(function (vr) {
 
+            if (!vr) {
+                res.err(404, AUTH.REGISTER.NO_VERIFICATION, 'No verification request found');
+                return next();
+            }
+
+            let expireDate = new Date(vr.expireDate);
+
+            if (new Date() > expireDate) {
+                res.err(400, AUTH.REGISTER.VERIFICATION_EXPIRED, 'Verification request has expired')
+                return next();
+            }
+
+            if(vr.beenUsed === true) {
+                res.err(400, AUTH.REGISTER.VERIFICATION_USED, 'Verification code has been used')
+                return next();
+            }
+
+            vr.update({ beenUsed: true }).then( (vr) => {
+                User.findOne({ where: { phoneNumber: vr.phoneNumber }})
+                    .then(function (user) {
+                        let salt = bcrypt.genSaltSync(10);
+                        let hash = bcrypt.hashSync(params.password, salt);
+                        user.update({password: hash});
+                    })
+                    .catch((err) => {
+                        res.err(500, AUTH.REGISTER.REGISTER_FAILED, err)
+                    });
+            })
+
+        })
+
+    }
+    else {
+        res.err(400, GENERIC.MISSING_PARAMS, 'Verification code and password are required!');
+    }
+});
+
+router.delete('/logout', verifyJWT,  (req, res, next) => {
+    console.log(req.user);
     User.findOne({ where: { id: req.user.id }})
         .then( user => {
             user.update({ token: null })
