@@ -69,7 +69,7 @@ router.post('/register', (req, res, next) => {
 
     if (params.verificationCode && params.password) {
         VerificationRequest.findOne({where: {
-            verificationCode:  params.verificationCode, 
+            verificationCode:  params.verificationCode
         }}).then(function (vr) {
 
             if (!vr) {
@@ -93,16 +93,17 @@ router.post('/register', (req, res, next) => {
                 let salt = bcrypt.genSaltSync(10);
                 let hash = bcrypt.hashSync(params.password, salt);
 
-                User.create({
+                return User.create({
                     phoneNumber: vr.phoneNumber,
                     password:    hash
-                }).then((user) => {
-                    delete user.dataValues.password;
-                    res.json(user);
-                }).catch((err) => {
-                    res.err(500, AUTH.REGISTER.REGISTER_FAILED, err)
                 });
-            })
+
+            }).then((user) => {
+                delete user.dataValues.password;
+                res.json(user);
+            }).catch((err) => {
+                res.err(500, AUTH.REGISTER.REGISTER_FAILED, err)
+            });
 
         })
 
@@ -186,17 +187,24 @@ router.post('/resetpw',  (req, res, next) => {
             }
 
             vr.update({ beenUsed: true }).then( (vr) => {
-                User.findOne({ where: { phoneNumber: vr.phoneNumber }})
-                    .then(function (user) {
-                        let salt = bcrypt.genSaltSync(10);
-                        let hash = bcrypt.hashSync(params.password, salt);
-                        user.update({password: hash});
-                    })
-                    .catch((err) => {
-                        res.err(500, AUTH.REGISTER.REGISTER_FAILED, err)
-                    });
+                return User.findOne({ where: { phoneNumber: vr.phoneNumber }})
             })
+            .then(user => {
+                if (!user) {
+                    res.err(500, AUTH.LOGIN.USER_NOT_FOUND, 'User not found!');
+                }
 
+                let salt = bcrypt.genSaltSync(10);
+                let hash = bcrypt.hashSync(params.password, salt);
+
+                return user.update({password: hash});
+            })
+            .then( () => {
+                res.status(200).json({message: 'Password resetted succesfully'});
+            })
+            .catch((err) => {
+                res.err(500, AUTH.REGISTER.REGISTER_FAILED, err)
+            });
         })
 
     }
