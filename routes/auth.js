@@ -6,18 +6,18 @@ import jwt          from 'jsonwebtoken';
 import randomstring from 'randomstring';
 import twilio       from 'twilio';
 
-import models            from '../models';
-import { config }        from '../utils';
-import { AUTH, GENERIC } from '../utils/errorTypes.js';
-import {VERIFICATION_TYPES} from '../utils/errorTypes.js';
-import { verifyJWT }     from '../middleware';
+import models                 from '../models';
+import { AUTH, GENERIC }      from '../utils/errorTypes.js';
+import { VERIFICATION_TYPES } from '../utils/errorTypes.js';
+import { config }             from '../utils';
+import { verifyJWT }          from '../middleware';
 
 let User                = models.Soar_user;
 let VerificationRequest = models.Soar_verification_request;
 
 let router = express.Router();
 
-let twilioClient = new twilio.RestClient(config.twilio.accountSid, config.twilio.authToken);
+//let twilioClient = new twilio.RestClient(config.twilio.accountSid, config.twilio.authToken);
 
 router.post('/verification', (req, res, next) => {
 
@@ -25,10 +25,19 @@ router.post('/verification', (req, res, next) => {
 
     if (params.phoneNumber && params.verificationType) {
 
+        if (params.verificationType !== VERIFICATION_TYPES.RESET_PASSWORD && params.verificationType !== VERIFICATION_TYPES.REGISTER) {
+           res.err(400, AUTH.VERIFICATION.INVALID_TYPE, 'Invalid verification request type!');
+           return next();
+        }
+
         User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
 
-            if (user && params.verificationType === VERIFICTION_TYPES.REGISTER) {
+            if (user && params.verificationType === VERIFICATION_TYPES.REGISTER) {
                 res.err(400, AUTH.VERIFICATION.USER_EXISTS, 'User already exists')
+                return next();
+            }
+            else if (!user && params.verificationType === VERIFICATION_TYPES.RESET_PASSWORD) {
+                res.err(404, AUTH.VERIFICATION.USER_NOT_FOUND, 'User not found')
                 return next();
             }
 
