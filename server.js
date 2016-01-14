@@ -13,7 +13,9 @@ import jsonErr     from './middleware/jsonErr.js';
 
 let app = express();
 
-app.use(rollbar.errorHandler(config.rollbar.postToken));
+app.use(rollbar.errorHandler(config.rollbar.postToken, {
+    environment: process.env.NODE_ENV || 'development'
+}));
 app.use(compression());
 app.use(jsonErr);
 app.use(cors());
