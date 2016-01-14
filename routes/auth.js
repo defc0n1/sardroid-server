@@ -8,7 +8,7 @@ import twilio       from 'twilio';
 
 import models                 from '../models';
 import { AUTH, GENERIC }      from '../utils/errorTypes.js';
-import { VERIFICATION_TYPES } from '../utils/errorTypes.js';
+import { VERIFICATION_TYPES } from '../utils/verificationTypes.js';
 import { config }             from '../utils';
 import { verifyJWT }          from '../middleware';
 
@@ -24,7 +24,7 @@ router.post('/verification', (req, res, next) => {
     let params = req.body;
 
     if (params.phoneNumber && params.verificationType) {
-
+        console.log(params);
         if (params.verificationType !== VERIFICATION_TYPES.RESET_PASSWORD && params.verificationType !== VERIFICATION_TYPES.REGISTER) {
            res.err(400, AUTH.VERIFICATION.INVALID_TYPE, 'Invalid verification request type!');
            return next();

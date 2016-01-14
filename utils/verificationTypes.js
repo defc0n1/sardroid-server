@@ -5,7 +5,7 @@
  */
 const VERIFICATION_TYPES = {
         REGISTER       : 'register',
-        PASSWORD_RESET : 'password_reset'
+        RESET_PASSWORD : 'reset_password'
 }
 
 

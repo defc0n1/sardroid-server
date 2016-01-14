@@ -23,10 +23,10 @@ const AUTH = {
     },
     RESET_PASSWORD       : {
         NO_VERIFICATION      : 'no_verification',
-        USER_NOT_FOUND : 'user_not_found',
+        USER_NOT_FOUND       : 'user_not_found',
         VERIFICATION_EXPIRED : 'verification_expired',
         VERIFICATION_USED    : 'verification_used',
-        RESET_FAILED      : 'register_failed',
+        RESET_FAILED         : 'register_failed',
     },
     LOGOUT          : {
         USER_NOT_FOUND : 'user_not_found'
