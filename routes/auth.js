@@ -179,19 +179,19 @@ router.post('/resetpw',  (req, res, next) => {
         }}).then(function (vr) {
 
             if (!vr) {
-                res.err(404, AUTH.REGISTER.NO_VERIFICATION, 'No verification request found');
+                res.err(404, AUTH.RESET_PASSWORD.NO_VERIFICATION, 'No verification request found');
                 return next();
             }
 
             let expireDate = new Date(vr.expireDate);
 
             if (new Date() > expireDate) {
-                res.err(400, AUTH.REGISTER.VERIFICATION_EXPIRED, 'Verification request has expired')
+                res.err(400, AUTH.RESET_PASSWORD.VERIFICATION_EXPIRED, 'Verification request has expired')
                 return next();
             }
 
             if(vr.beenUsed === true) {
-                res.err(400, AUTH.REGISTER.VERIFICATION_USED, 'Verification code has been used')
+                res.err(400, AUTH.RESET_PASSWORD.VERIFICATION_USED, 'Verification code has been used')
                 return next();
             }
 
@@ -200,7 +200,7 @@ router.post('/resetpw',  (req, res, next) => {
             })
             .then(user => {
                 if (!user) {
-                    res.err(500, AUTH.LOGIN.USER_NOT_FOUND, 'User not found!');
+                    res.err(500, AUTH.RESET_PASSWORD.USER_NOT_FOUND, 'User not found!');
                 }
 
                 let salt = bcrypt.genSaltSync(10);
@@ -208,11 +208,12 @@ router.post('/resetpw',  (req, res, next) => {
 
                 return user.update({password: hash});
             })
-            .then( () => {
-                res.status(200).json({message: 'Password resetted succesfully'});
+            .then( user => {
+                delete user.dataValues.password;
+                res.status(200).json(user);
             })
             .catch((err) => {
-                res.err(500, AUTH.REGISTER.REGISTER_FAILED, err)
+                res.err(500, AUTH.RESET_PASSWORD.RESET_FAILED, err)
             });
         })
 
