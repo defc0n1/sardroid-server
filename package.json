@@ -4,9 +4,9 @@
   "description": "Server for brokering connections and misc for Sardroid",
   "main": "server.js",
   "scripts": {
-    "start": "babel-node app/bin/www",
+    "start": "babel-node app/bin/www.js",
     "build": "babel app -d dist",
-    "serve": "node dist/bin/www"
+    "serve": "node dist/bin/www.js"
   },
   "repository": {
     "type": "git",
