@@ -4,8 +4,9 @@
   "description": "Server for brokering connections and misc for Sardroid",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel-node bin/www"
+    "start": "babel-node app/bin/www",
+    "build": "babel app -d dist",
+    "serve": "node dist/bin/www"
   },
   "repository": {
     "type": "git",
