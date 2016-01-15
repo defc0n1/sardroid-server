@@ -147,13 +147,13 @@ router.post('/login', (req, res, next) => {
 
                 delete user.dataValues.password;
                 delete user.dataValues.token;
-                jwt.sign(user, config.jwt_secret, {
+                jwt.sign(user.dataValues, config.jwt_secret, {
                     issuer:    user.phoneNumber,
                     expiresIn: '7 days'
                 }, token => {
 
                     user.update({ token: token })
-                    .then(() => {
+                    .then((user) => {
                         delete user.dataValues.password;
                         res.status(200).json({user});
                     })
