@@ -24,7 +24,7 @@ and then
 
 ```sh
 
-    npm serve
+    npm run-script serve
 
 ```
 
