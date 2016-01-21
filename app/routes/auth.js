@@ -24,7 +24,6 @@ router.post('/verification', (req, res, next) => {
     let params = req.body;
 
     if (params.phoneNumber && params.verificationType) {
-        console.log(params);
         if (params.verificationType !== VERIFICATION_TYPES.RESET_PASSWORD && params.verificationType !== VERIFICATION_TYPES.REGISTER) {
            res.err(400, AUTH.VERIFICATION.INVALID_TYPE, 'Invalid verification request type!');
            return next();
@@ -224,7 +223,6 @@ router.post('/resetpw',  (req, res, next) => {
 });
 
 router.delete('/logout', verifyJWT,  (req, res, next) => {
-    console.log(req.user);
     User.findOne({ where: { id: req.user.id }})
         .then( user => {
             user.update({ token: null })
@@ -233,7 +231,6 @@ router.delete('/logout', verifyJWT,  (req, res, next) => {
             res.status(200).json({ message: 'Logged out succesfully' })
         })
         .catch(err => {
-            console.log(err);
             res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found')
         })
 });
