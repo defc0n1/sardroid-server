@@ -12,8 +12,8 @@ import { VERIFICATION_TYPES } from '../utils/verificationTypes.js';
 import { config }             from '../utils';
 import { verifyJWT }          from '../middleware';
 
-let User                = models.Soar_user;
-let VerificationRequest = models.Soar_verification_request;
+let User                = models.User;
+let VerificationRequest = models.VerificationRequest;
 
 let router = express.Router();
 
@@ -68,7 +68,8 @@ router.post('/verification', (req, res, next) => {
 
     }
     else {
-        res.err(400, AUTH.VERIFICATION.NUMBER_MISSING,  'Phone number is required!')
+        if (!params.phoneNumber)      res.err(400, AUTH.VERIFICATION.NUMBER_MISSING, 'Phone number is required!')
+        if (!params.verificationType) res.err(400, AUTH.VERIFICATION.TYPE_MISSING,   'Verification type is required')
     }
 });
 

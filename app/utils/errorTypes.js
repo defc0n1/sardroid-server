@@ -7,6 +7,7 @@ const AUTH = {
     VERIFICATION   : {
         USER_EXISTS    : 'user_exists',
         NUMBER_MISSING : 'number_missing',
+        TYPE_MISSING   : 'type_missing',
         USER_NOT_FOUND : 'user_not_found',
         INVALID_TYPE   : 'invalid_type'
     },
