@@ -30,3 +30,8 @@ and then
 
 to transpile everything to ES5 and start the node server!
 
+##Migrations
+
+This project uses the sequelize CLI to manage migrations and such: http://docs.sequelizejs.com/en/latest/docs/migrations/
+
+Migrations were added to this project in the middle of this, so it's sort of a hack job! For now, you're going to have to set up database credentials to both app/utils/config.js and app/config/config.json for now.
