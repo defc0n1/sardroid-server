@@ -24,6 +24,8 @@ RUN npm install
 
 RUN npm run-script build
 
+RUN chmod +x /sardroid/script/start-server.sh
+
 EXPOSE 9000
 
 CMD ["bash", "/sardroid/script/start-server.sh"]
