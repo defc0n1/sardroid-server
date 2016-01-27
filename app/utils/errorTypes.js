@@ -39,6 +39,7 @@ const AUTH = {
  */
 const GENERIC = {
     MISSING_PARAMS    : 'missing_params',
+    TOKEN_MISSING     : 'token_missing',
     UNSPECIFIED_ERROR : 'unspecified_error'
 }
 

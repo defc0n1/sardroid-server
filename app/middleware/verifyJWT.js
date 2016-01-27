@@ -1,6 +1,7 @@
 'use strict'
 
 import { config, decodeJWT } from '../utils';
+import { GENERIC }           from '../utils/errorTypes.js';
 
 export default function verifyJWT(req, res, next)  {
     let token = req.headers['authorization']
@@ -14,11 +15,12 @@ export default function verifyJWT(req, res, next)  {
 
     decodeJWT(token)
         .then(results => {
+            console.log(results);
             req.user = results;
             next();
         })
         .catch( err => {
-            res.status(400).json({error: 'Error: ' + err})
+            res.err(400, GENERIC.TOKEN_MISSING, 'Token is missing!')
             res.end();
         })
 };
