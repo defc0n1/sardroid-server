@@ -16,7 +16,7 @@ RUN npm install -g sequelize-cli
 
 RUN mkdir /sardroid
 
-RUN curl -SL https://github.com/melonmanchan/sardroid-server/tarball/development \
+RUN curl -SL https://github.com/melonmanchan/sardroid-server/tarball/master \
     | tar -zxC /sardroid --strip-components=1
 
 ADD . /sardroid
