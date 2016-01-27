@@ -18,7 +18,7 @@ export default {
     db: {
             host     : process.env.POSTGRES_HOST    || 'localhost',
             user     : process.env.POSTGRES_USER    || 'postgres',
-            password : process.env.POSTGRES_PW      || 'supersalainensalasana',
+            password : process.env.POSTGRES_PASSWORD|| 'supersalainensalasana',
             database : process.env.POSTGRES_DB      || 'soar',
             charset  : process.env.POSTGRES_CHARSET || 'utf8',
             dialect  : 'postgres'
