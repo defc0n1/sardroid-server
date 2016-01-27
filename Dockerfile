@@ -26,5 +26,15 @@ RUN npm run-script build
 
 EXPOSE 9000
 
+RUN apt-get install postgresql postgresql-contrib
+
+USER postgres
+
+RUN    /etc/init.d/postgresql start &&\
+    psql --command "CREATE USER soar WITH SUPERUSER PASSWORD 'soarpassu';" &&\
+    createdb -O soar soar
+
+USER root
+
 CMD ["bash", "/sardroid/script/start-server.sh"]
 
