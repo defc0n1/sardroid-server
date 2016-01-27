@@ -45,3 +45,31 @@ So you definitely should
 If you don't want to install anything globally, you'll have to append each call to the sequelize CLI with ./node_modules/.bin/ to use the locally installed CLI tool.
 
 Migrations were added to this project in the middle of development, so it's sort of a hack job! You're going to have to set up database credentials to both app/utils/config.js and app/config/config.json for now.
+
+## Docker
+
+To run the docker container, specify the necessary environment variables into the sardroid.env file, then pull
+up a postgres container from Docher Hub with:
+
+
+```sh
+
+    docker pull postgres:9.4.5
+    docker run --name soardb --env-file sardroid.env -d postgres:9.4.5
+
+```
+
+to spin up the database container with posgres by the name of soardb. Next up, build the image and start it,
+linking it together with the postgres container.
+
+
+```sh
+
+    cd ..
+    docker build sardroid-server
+    docker run --name soardb --env-file sardroid.env -d postgres:9.4.5
+    docker run --name soar-server --env-file sardroid.env -p 9000:9000 --link soardb:postgres -d <DOCKER-IMAGE-ID>
+
+```
+
+That should do it!
