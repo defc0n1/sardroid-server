@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import ip    from 'ip';
 import http  from 'http';
 import https from 'https';
