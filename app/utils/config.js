@@ -15,14 +15,6 @@ export default {
         allow_discovery : true,
         proxied         : (process.env.IS_PROXIED == 'true')
     },
-    db: {
-            host     : process.env.POSTGRES_HOST    || 'localhost',
-            user     : process.env.POSTGRES_USER    || 'postgres',
-            password : process.env.POSTGRES_PASSWORD|| 'supersalainensalasana',
-            database : process.env.POSTGRES_DB      || 'soar',
-            charset  : process.env.POSTGRES_CHARSET || 'utf8',
-            dialect  : 'postgres'
-    },
     twilio: {
             accountSid   : process.env.TWILIO_SID    || '',
             authToken    : process.env.TWILIO_TOKEN  || '',

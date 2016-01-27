@@ -1,16 +1,16 @@
-import config    from '../utils/config';
-import path      from 'path';
-import fs        from 'fs';
-import Sequelize from 'sequelize';
+import databaseConfig from '../utils/databaseConfig.js';
+import path           from 'path';
+import fs             from 'fs';
+import Sequelize      from 'sequelize';
 
 let db = {};
 let sequelize = new Sequelize(
-    config.db.database,
-    config.db.user,
-    config.db.password,
+    databaseConfig.production.database,
+    databaseConfig.production.username,
+    databaseConfig.production.password,
     {
-        dialect: config.db.dialect,
-        host: config.db.host,
+        dialect: databaseConfig.production.dialect,
+        host:    databaseConfig.production.host,
     }
 );
 
