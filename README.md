@@ -67,7 +67,6 @@ linking it together with the postgres container.
 
     cd ..
     docker build sardroid-server
-    docker run --name soardb --env-file sardroid.env -d postgres:9.4.5
     docker run --name soar-server --env-file sardroid.env -p 9000:9000 --link soardb:postgres -d <DOCKER-IMAGE-ID>
 
 ```
