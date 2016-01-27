@@ -25,8 +25,6 @@ WORKDIR /sardroid
 
 RUN npm install
 
-RUN npm run-script build
-
 RUN chmod +x /sardroid/scripts/start-server.sh
 
 EXPOSE 9000

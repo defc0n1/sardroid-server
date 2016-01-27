@@ -1,7 +1,8 @@
 #!/bin/env bash
 
 # Interpolate environment variables to json for sequelize migrations
-# Bit of a hack, I know!
+# These variables are ideally read from the sardroid.env file when
+# spinning up the Docker container with docker start.
 cat << EOF > /sardroid/app/config/config.json
 {
     production: {
@@ -16,6 +17,8 @@ cat << EOF > /sardroid/app/config/config.json
 EOF
 
 sequelize db:migrate
+
+npm run-script build
 
 npm run-script serve
 
