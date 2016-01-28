@@ -3,6 +3,7 @@
 var path = require('path')
 
 module.exports = {
-    'config': path.resolve('app/utils', 'databaseConfig.js')
+    'config'          : path.resolve('app/utils', 'databaseConfig.js'),
+    'migrations-path' : path.resolve('app/', 'migrations')
 }
 
