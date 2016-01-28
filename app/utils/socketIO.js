@@ -22,7 +22,6 @@ let connections = [];
 
 function createSocketIO(server, app) {
     io = require('socket.io')(server);
-    io.set('origins', '*');
     io.on(EVENT_TYPES.CONNECTION, (socket) => {
 
         socket.on(EVENT_TYPES.DISCONNECT, () => {
