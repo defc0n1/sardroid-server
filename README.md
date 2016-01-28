@@ -30,7 +30,7 @@ and then
 
 to transpile everything to ES5 and start the node server!
 
-##Migrations
+## Migrations
 
 This project uses the sequelize CLI to manage migrations and such: http://docs.sequelizejs.com/en/latest/docs/migrations/
 
@@ -60,14 +60,16 @@ up a postgres container from Docher Hub with:
 ```
 
 to spin up the database container with posgres by the name of soardb. Next up, build the image and start it,
-linking it together with the postgres container.
+linking it together with the postgres container. None of the application code is inside the container, so 
+we don't need to rebuild the docker image on miniscule changes. You shouls pass the location to this repository
+on the local filesystem with the -v argument.
 
 
 ```sh
 
     cd ..
     docker build sardroid-server
-    docker run --name soar-server --env-file sardroid.env -p 9000:9000 --link soardb:postgres -d <DOCKER-IMAGE-ID>
+    docker run --name soar-server --env-file sardroid.env -v <REPO-ABSOLUTE-PATH>/:/sardroid -p 9000:9000 --link soardb:postgres -d <DOCKER-IMAGE-ID>
 
 ```
 

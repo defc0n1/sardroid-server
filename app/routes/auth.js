@@ -17,7 +17,7 @@ let VerificationRequest = models.VerificationRequest;
 
 let router = express.Router();
 
-//let twilioClient = new twilio.RestClient(config.twilio.accountSid, config.twilio.authToken);
+let twilioClient = new twilio.RestClient(config.twilio.accountSid, config.twilio.authToken);
 
 router.post('/verification', (req, res, next) => {
 
@@ -52,7 +52,7 @@ router.post('/verification', (req, res, next) => {
             }).then( (vr) => {
                 console.log(verificationCode);
                     res.status(201).json({message: 'Verification request created'});
-                /* twilioClient.messages.create({
+                 twilioClient.messages.create({
                         to   : vr.phoneNumber,
                         from : config.twilio.twilioNumber,
                         body : `Your verification code is ${verificationCode}`
@@ -62,7 +62,7 @@ router.post('/verification', (req, res, next) => {
                         } else {
                             res.status(201).json({message: 'Verification request created'});
                         }
-                    });*/
+                    });
             });
         })
 
