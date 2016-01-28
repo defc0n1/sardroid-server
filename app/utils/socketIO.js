@@ -21,7 +21,7 @@ let io;
 let connections = [];
 
 function createSocketIO(server, app) {
-    io = require('socket.io')(server);
+    io = require('socket.io')(server, {'transports': ['websocket', 'polling']});
     io.set('origins', '*');
     io.on(EVENT_TYPES.CONNECTION, (socket) => {
 
