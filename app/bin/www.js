@@ -37,12 +37,12 @@ models.sequelize.sync({force: false}).then(() => {
           ca:   ca
         };
 
-        server = https.createServer(credentials, app).listen(port, 'localhost', () => {
+        server = https.createServer(credentials, app).listen(port, '0.0.0.0', () => {
             log(`HTTPS Sardroid server running on: http://${server.address().address}:${server.address().port}`);
         });
 
     } else {
-        server = http.createServer(app).listen(port, 'localhost', () => {
+        server = http.createServer(app).listen(port, '0.0.0.0', () => {
             log(`Sardroid server running on: http://${server.address().address}:${server.address().port}`);
         })
     }
