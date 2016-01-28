@@ -51,7 +51,6 @@ router.post('/verification', (req, res, next) => {
                 beenUsed:         false
             }).then( (vr) => {
                 console.log(verificationCode);
-                    res.status(201).json({message: 'Verification request created'});
                  twilioClient.messages.create({
                         to   : vr.phoneNumber,
                         from : config.twilio.twilioNumber,
