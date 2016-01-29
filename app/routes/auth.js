@@ -54,7 +54,7 @@ router.post('/verification', (req, res, next) => {
                  twilioClient.messages.create({
                         to   : vr.phoneNumber,
                         from : config.twilio.twilioNumber,
-                        body : `Your verification code is ${verificationCode}`
+                        body : `Your SoAR verification code is ${verificationCode}`
                     }, function(error, message) {
                         if (error) {
                             res.err(500, GENERIC.UNSPECIFIED_ERROR,`Twilio error: ${error}`)
