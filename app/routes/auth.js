@@ -57,6 +57,7 @@ router.post('/verification', (req, res, next) => {
                         body : `Your SoAR verification code is ${verificationCode}`
                     }, function(error, message) {
                         if (error) {
+                            console.log(error);
                             res.err(500, GENERIC.UNSPECIFIED_ERROR,`Twilio error: ${error}`)
                         } else {
                             res.status(201).json({message: 'Verification request created'});
