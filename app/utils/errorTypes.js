@@ -378,6 +378,7 @@ const TWILIO = {
 const GENERIC = {
     MISSING_PARAMS    : 'missing_params',
     TOKEN_MISSING     : 'token_missing',
+    TWILIO_ERROR      : 'twilio_error',
     UNSPECIFIED_ERROR : 'unspecified_error'
 };
 

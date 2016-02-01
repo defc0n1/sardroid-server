@@ -58,7 +58,7 @@ router.post('/verification', (req, res, next) => {
                     }, function(error, message) {
                         if (error) {
                             console.log(error);
-                            res.err(500, GENERIC.UNSPECIFIED_ERROR,`Twilio error: ${error}`)
+                            res.err(500, error.code, error.message)
                         } else {
                             res.status(201).json({message: 'Verification request created'});
                         }
