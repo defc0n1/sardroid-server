@@ -147,6 +147,8 @@ router.post('/login', (req, res, next) => {
 
                 delete user.dataValues.password;
                 delete user.dataValues.token;
+                delete user.dataValues.contactsList;
+
                 jwt.sign(user.dataValues, config.jwt_secret, {
                     issuer:    user.phoneNumber,
                     expiresIn: '7 days'
@@ -155,6 +157,8 @@ router.post('/login', (req, res, next) => {
                     user.update({ token: token })
                     .then((user) => {
                         delete user.dataValues.password;
+                        delete user.dataValues.contactsList;
+
                         res.status(200).json({user});
                     })
                     .catch( err => {
@@ -210,6 +214,7 @@ router.post('/resetpw',  (req, res, next) => {
             })
             .then( user => {
                 delete user.dataValues.password;
+                delete user.dataValues.contactsList;
                 res.status(200).json(user);
             })
             .catch((err) => {
