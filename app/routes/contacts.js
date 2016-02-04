@@ -17,19 +17,25 @@ router.post('/user/contacts', verifyJWT,  (req, res, next) => {
     let params = req.body;
 
     if  (params.contactsList) {
-
+        console.log('contact list', params.contactsList);
         User.findOne({ where: { id: req.user.id }})
             .then( user => {
 
                 let numberList = _.map(params.contactsList, 'phoneNumber]');
-
+                console.log('numberlist', numberList);
                 return User.findAll({
                     attributes: ['phoneNumber'] ,
                     where: { phoneNumber: { $in: numberList}}
                 })
             })
             .then( users => {
-                return user.update({contactsList: users });
+                console.log('users', users);
+                if (users) {
+                    let validContacts = _.filter(params.contactsList, contact => {
+                        return _.contains(users, contact);
+                    })
+                    return user.update({contactsList: validContacts });
+                }
             })
             .then( user => {
                 res.status(200).json(user.contactsList);
