@@ -13,7 +13,7 @@ let User = models.User;
 
 let router = express.Router();
 
-router.post('/user/contacts', verifyJWT,  (req, res, next) => {
+router.post('/contacts', verifyJWT,  (req, res, next) => {
     let params = req.body;
 
     if  (params.contactsList) {
@@ -50,7 +50,7 @@ router.post('/user/contacts', verifyJWT,  (req, res, next) => {
     }
 });
 
-router.get('/user/contacts', verifyJWT,  (req, res, next) => {
+router.get('/contacts', verifyJWT,  (req, res, next) => {
 
     User.findOne({ where: { id: req.user.id }})
         .then( user => {
@@ -65,7 +65,7 @@ router.get('/user/contacts', verifyJWT,  (req, res, next) => {
         })
 });
 
-router.get('/user/contacts/:state', verifyJWT,  (req, res, next) => {
+router.get('/contacts/:state', verifyJWT,  (req, res, next) => {
     let state = req.params.state;
 
     if (!state || (state !== 'online' && state !== 'offline')) {
