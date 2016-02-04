@@ -15,7 +15,6 @@ export default function verifyJWT(req, res, next)  {
 
     decodeJWT(token)
         .then(results => {
-            console.log(results);
             req.user = results;
             next();
         })
