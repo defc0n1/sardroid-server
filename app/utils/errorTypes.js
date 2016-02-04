@@ -36,7 +36,8 @@ const AUTH = {
 
 const USER = {
     CONTACTS: {
-        SAVE_ERROR: 'save_error'
+        SAVE_ERROR: 'save_error',
+        INVALID_STATE: 'invalid_state'
     }
 };
 
