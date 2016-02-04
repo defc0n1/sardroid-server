@@ -34,6 +34,12 @@ const AUTH = {
     }
 };
 
+const USER = {
+    CONTACTS: {
+        SAVE_ERROR: 'save_error'
+    }
+};
+
 /*
  * Twilio error codes copy pasted from the twilio site
  */
@@ -382,5 +388,5 @@ const GENERIC = {
     UNSPECIFIED_ERROR : 'unspecified_error'
 };
 
-export { AUTH, GENERIC, TWILIO }
+export { AUTH, USER, GENERIC, TWILIO }
 
