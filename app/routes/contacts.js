@@ -11,17 +11,33 @@ let User = models.User;
 
 let router = express.Router();
 
-router.post('/user/contactslist', verifyJWT,  (req, res, next) => {
+router.post('/user/contacts', verifyJWT,  (req, res, next) => {
+    let params = req.body;
 
+    if  (params.contactsList) {
+        User.findOne({ where: { id: req.user.id }})
+            .then( user => {
+                return user.update({contactsList: params.contactsList });
+            })
+            .then( user => {
+                res.status(200).json(user.contactsList);
+            })
+            .catch(err => {
+                console.log(err);
+                res.err(404, USER.CONTACTS.SAVE_ERROR, 'Error saving contacts list!');
+            })
+    } else {
+        res.err(400, GENERIC.MISSING_PARAMS, 'Contact list is missing!');
+    }
 });
 
 router.get('/user/contacts', verifyJWT,  (req, res, next) => {
     User.findOne({ where: { id: req.user.id }})
         .then( user => {
-            res.status(200).json({ contactslist: user.contactsList})
+            res.status(200).json({ contactslist: user.contactsList});
         })
         .catch(err => {
-            res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found')
+            res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found');
         })
 });
 
