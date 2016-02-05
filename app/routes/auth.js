@@ -6,11 +6,11 @@ import jwt          from 'jsonwebtoken';
 import randomstring from 'randomstring';
 import twilio       from 'twilio';
 
-import models                 from '../models';
-import { AUTH, GENERIC }      from '../utils/errorTypes.js';
-import { VERIFICATION_TYPES } from '../utils/verificationTypes.js';
-import { config }             from '../utils';
-import { verifyJWT }          from '../middleware';
+import models                     from '../models';
+import { AUTH, GENERIC }          from '../utils/errorTypes.js';
+import { VERIFICATION_TYPES }     from '../utils/verificationTypes.js';
+import { config }                 from '../utils';
+import { verifyJWT, resolveUser } from '../middleware';
 
 let User                = models.User;
 let VerificationRequest = models.VerificationRequest;
@@ -50,19 +50,20 @@ router.post('/verification', (req, res, next) => {
                 expireDate:       date,
                 beenUsed:         false
             }).then( (vr) => {
+                res.status(201).json({message: 'Verification request created'});
                 console.log(verificationCode);
-                 twilioClient.messages.create({
-                        to   : vr.phoneNumber,
-                        from : config.twilio.twilioNumber,
-                        body : `Your SoAR verification code is ${verificationCode}`
-                    }, function(error, message) {
-                        if (error) {
-                            console.log(error);
-                            res.err(500, GENERIC.TWILIO_ERROR, error.message)
-                        } else {
-                            res.status(201).json({message: 'Verification request created'});
-                        }
-                    });
+                 //twilioClient.messages.create({
+                 //       to   : vr.phoneNumber,
+                 //       from : config.twilio.twilioNumber,
+                 //       body : `Your SoAR verification code is ${verificationCode}`
+                 //   }, function(error, message) {
+                 //       if (error) {
+                 //           console.log(error);
+                 //           res.err(500, GENERIC.TWILIO_ERROR, error.message)
+                 //       } else {
+                 //           res.status(201).json({message: 'Verification request created'});
+                 //       }
+                 //   });
             });
         })
 
@@ -176,7 +177,9 @@ router.post('/login', (req, res, next) => {
 });
 
 router.post('/resetpw',  (req, res, next) => {
+
     let params = req.body;
+
     if (params.verificationCode && params.password) {
         VerificationRequest.findOne({where: {
             verificationCode:  params.verificationCode
@@ -228,11 +231,8 @@ router.post('/resetpw',  (req, res, next) => {
     }
 });
 
-router.delete('/logout', verifyJWT,  (req, res, next) => {
-    User.findOne({ where: { id: req.user.id }})
-        .then( user => {
-            user.update({ token: null })
-        })
+router.delete('/logout', verifyJWT, resolveUser,  (req, res, next) => {
+        req.user.update({ token: null })
         .then( results => {
             res.status(200).json({ message: 'Logged out succesfully' })
         })

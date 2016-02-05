@@ -1,6 +1,7 @@
 'use strict'
 
-import verifyJWT from './verifyJWT'
+import resolveUser from './relations/resolveUser';
+import verifyJWT   from './verifyJWT';
 
-export { verifyJWT  }
+export { verifyJWT, resolveUser }
 
