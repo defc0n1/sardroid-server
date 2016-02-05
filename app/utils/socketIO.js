@@ -27,7 +27,7 @@ function createSocketIO(server, app) {
         socket.on(EVENT_TYPES.DISCONNECT, () => {
             log(`Socket disconnected with id ${socket.id}`, LOG_TYPES.WARN);
 
-            var i = connections.indexOf(socket);
+            let i = connections.indexOf(socket);
             connections.splice(i, 1);
         });
 
@@ -46,7 +46,6 @@ function createSocketIO(server, app) {
             })
     });
 }
-
 
 export { io, connections, createSocketIO, EVENT_TYPES }
 
