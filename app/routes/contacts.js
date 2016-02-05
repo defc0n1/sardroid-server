@@ -59,7 +59,12 @@ router.get('/contacts', verifyJWT, resolveUser,  (req, res, next) => {
                 contact.currentState = _.includes(peerJSConnections, contact.phoneNumber) ? contactStates.ONLINE : contactStates.OFFLINE
                 return contact;
         });
-        res.json({contactsList: listWithState});
+
+        let sortedList = _.sortBy(contacts, contact => {
+                return contact.currentState === contactStates.OFFLINE;
+        });
+
+        res.json(sortedList);
 });
 
 export default router
