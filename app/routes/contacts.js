@@ -18,11 +18,9 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
     let params = req.body;
 
     if  (params.contactsList) {
-        console.log('contact list', params.contactsList);
 
         // First, we reduce the sent contacts list to simply the phone numbers.
         let numberList = _.map(params.contactsList, 'phoneNumber');
-        console.log('numberlist', numberList);
 
         // Then, we find all the registered users that match the numbers that were sent for syncing.
         User.findAll({
@@ -31,15 +29,11 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
         })
         .then( registeredNumbers => {
 
-            console.log('users', registeredNumbers);
             let formattedRegisteredNumbers = _.map(registeredNumbers, 'dataValues.phoneNumber');
-            console.log(formattedRegisteredNumbers);
             // Finally, we filter the sent contacts list down to those matching registered SoAR users.
             let validContacts = _.filter(params.contactsList, contact => {
                 return _.includes(formattedRegisteredNumbers, contact.phoneNumber);
             });
-
-            console.log('validContacts', validContacts);
 
             return req.user.update({contactsList: validContacts });
         })
@@ -62,10 +56,9 @@ router.get('/contacts', verifyJWT, resolveUser,  (req, res, next) => {
 
         // Add additional property to each contact, stating whether or not they're currently online or not
         let listWithState =  _.map(contactsList, contact => {
-                contact.currentState = _.includes(peerJSConnections, contact.phoneNumber) ? contactStates.OFFLINE : contactStates.ONLINE;
+                contact.currentState = _.includes(peerJSConnections, contact.phoneNumber) ? contactStates.ONLINE : contactStates.OFFLINE
                 return contact;
         });
-
         res.json({contactsList: listWithState});
 });
 
