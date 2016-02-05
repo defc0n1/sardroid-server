@@ -12,7 +12,7 @@ export default {
     peerJSOptions: {
         debug           : true,
         port            : process.env.PORT || 9000,
-        allow_discovery : true,
+        allow_discovery : false,
         proxied         : (process.env.IS_PROXIED == 'true')
     },
     twilio: {
