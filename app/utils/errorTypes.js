@@ -34,6 +34,9 @@ const AUTH = {
     }
 };
 
+/*
+ * User-related errors (mostly related to the contacts-route)
+ */
 const USER = {
     CONTACTS: {
         SAVE_ERROR    : 'save_error',

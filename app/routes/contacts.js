@@ -21,7 +21,7 @@ router.post('/contacts', verifyJWT,  (req, res, next) => {
         User.findOne({ where: { id: req.user.id }})
             .then( user => {
 
-                let numberList = _.map(params.contactsList, 'phoneNumber]');
+                let numberList = _.map(params.contactsList, 'phoneNumber');
                 console.log('numberlist', numberList);
                 return User.findAll({
                     attributes: ['phoneNumber'] ,
@@ -32,7 +32,7 @@ router.post('/contacts', verifyJWT,  (req, res, next) => {
                 console.log('users', users);
                 if (users) {
                     let validContacts = _.filter(params.contactsList, contact => {
-                        return _.contains(users, contact);
+                        return _.includes(users, contact);
                     })
                     return user.update({contactsList: validContacts });
                 }
@@ -42,7 +42,7 @@ router.post('/contacts', verifyJWT,  (req, res, next) => {
             })
             .catch(err => {
                 console.log(err);
-                res.err(404, USER.CONTACTS.SAVE_ERROR, 'Error saving contacts list!');
+                res.err(500, USER.CONTACTS.SAVE_ERROR, 'Error saving contacts list!');
             })
 
     } else {
@@ -80,8 +80,6 @@ router.get('/contacts/:state', verifyJWT,  (req, res, next) => {
             res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found');
         })
 });
-
-
 
 export default router
 
