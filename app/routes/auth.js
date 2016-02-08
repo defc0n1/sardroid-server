@@ -52,7 +52,7 @@ router.post('/verification', (req, res, next) => {
             }).then( (vr) => {
                 console.log(verificationCode);
                  twilioClient.messages.create({
-                        to   : vr.phoneNumber,
+                        to   : `+${vr.phoneNumber}`,
                         from : config.twilio.twilioNumber,
                         body : `Your SoAR verification code is ${verificationCode}`
                     }, function(error, message) {
