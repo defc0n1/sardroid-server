@@ -9,7 +9,7 @@ For development simply run
 ```sh
 
     npm start
-
+ 
 ```
 
 on your command line. When you're ready to deploy, run

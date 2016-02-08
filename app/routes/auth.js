@@ -50,10 +50,10 @@ router.post('/verification', (req, res, next) => {
                 expireDate:       date,
                 beenUsed:         false
             }).then( (vr) => {
-                res.status(201).json({message: 'Verification request created'});
                 console.log(verificationCode);
+                res.status(201).json({message: 'Verification request created'});
                  //twilioClient.messages.create({
-                 //       to   : vr.phoneNumber,
+                 //       to   : `+${vr.phoneNumber}`,
                  //       from : config.twilio.twilioNumber,
                  //       body : `Your SoAR verification code is ${verificationCode}`
                  //   }, function(error, message) {
