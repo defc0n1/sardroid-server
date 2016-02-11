@@ -3,9 +3,9 @@
 import bcrypt       from 'bcryptjs';
 import express      from 'express';
 import jwt          from 'jsonwebtoken';
-import randomstring from 'randomstring';
 import twilio       from 'twilio';
 
+import generateRandomPin      from '../utils/generateRandomPin';
 import models                 from '../models';
 import { AUTH, GENERIC }      from '../utils/errorTypes.js';
 import { VERIFICATION_TYPES } from '../utils/verificationTypes.js';
@@ -43,7 +43,8 @@ router.post('/verification', (req, res, next) => {
             let date = new Date();
             date.setMinutes(date.getMinutes() + 60);
 
-            let verificationCode = randomstring.generate(6);
+            let verificationCode = generateRandomPin(6);
+
             VerificationRequest.create({
                 phoneNumber:      params.phoneNumber,
                 verificationCode: verificationCode,
@@ -51,18 +52,19 @@ router.post('/verification', (req, res, next) => {
                 beenUsed:         false
             }).then( (vr) => {
                 console.log(verificationCode);
-                 twilioClient.messages.create({
-                        to   : `+${vr.phoneNumber}`,
-                        from : config.twilio.twilioNumber,
-                        body : `Your SoAR verification code is ${verificationCode}`
-                    }, function(error, message) {
-                        if (error) {
-                            console.log(error);
-                            res.err(500, GENERIC.TWILIO_ERROR, error.message)
-                        } else {
-                            res.status(201).json({message: 'Verification request created'});
-                        }
-                    });
+
+                twilioClient.messages.create({
+                       to   : `+${vr.phoneNumber}`,
+                       from : config.twilio.twilioNumber,
+                       body : `Your SoAR verification code is ${verificationCode}`
+                   }, function(error, message) {
+                       if (error) {
+                           console.log(error);
+                           res.err(500, GENERIC.TWILIO_ERROR, error.message)
+                       } else {
+                           res.status(201).json({message: 'Verification request created'});
+                       }
+                   });
             });
         })
 
@@ -78,7 +80,8 @@ router.post('/register', (req, res, next) => {
 
     if (params.verificationCode && params.password) {
         VerificationRequest.findOne({where: {
-            verificationCode:  params.verificationCode
+            verificationCode:  params.verificationCode,
+            beenUsed: false
         }}).then(function (vr) {
 
             if (!vr) {
