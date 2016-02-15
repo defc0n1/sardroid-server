@@ -10,8 +10,12 @@ export default function resolveUser(req, res, next)  {
 
     User.findById(jwtUserId)
         .then(function (loggedInUser) {
-            req.user = loggedInUser;
-            return next();
+            if (!loggedInUser) {
+                res.err(404, 'User not found!')
+            } else {
+                req.user = loggedInUser;
+                return next();
+            }
         })
         .catch(function (err) {
             res.err(500)
