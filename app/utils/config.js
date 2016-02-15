@@ -10,7 +10,7 @@ export default {
         ca         : process.env.CA          || '/etc/letsencrypt/live/mattij.com/fullchain.pem'
     },
     peerJSOptions: {
-        debug           : true,
+        debug           : (process.env.NODE_ENV === 'development'),
         port            : process.env.PORT || 9000,
         allow_discovery : false,
         proxied         : (process.env.IS_PROXIED == 'true')
