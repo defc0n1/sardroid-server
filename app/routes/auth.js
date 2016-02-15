@@ -71,29 +71,35 @@ router.post('/register', (req, res, next) => {
     let params = req.body;
 
     if (params.verificationCode && params.password) {
-        VerificationRequest.findOne({where: {
-            verificationCode:  params.verificationCode,
-            beenUsed: false
-        }}).then(function (vr) {
 
-            if (!vr) {
-                res.err(404, AUTH.REGISTER.NO_VERIFICATION, 'No verification request found');
-                return next();
-            }
+            VerificationRequest.findOne({
+                where: {
+                    verificationCode:  params.verificationCode,
+                    beenUsed: false
+                }
+            })
+            .then((vr) => {
 
-            let expireDate = new Date(vr.expireDate);
+                if (!vr) {
+                    res.err(404, AUTH.REGISTER.NO_VERIFICATION, 'No verification request found');
+                    return next();
+                }
 
-            if (new Date() > expireDate) {
-                res.err(400, AUTH.REGISTER.VERIFICATION_EXPIRED, 'Verification request has expired')
-                return next();
-            }
+                let expireDate = new Date(vr.expireDate);
 
-            if(vr.beenUsed === true) {
-                res.err(400, AUTH.REGISTER.VERIFICATION_USED, 'Verification code has been used')
-                return next();
-            }
+                if (new Date() > expireDate) {
+                    res.err(400, AUTH.REGISTER.VERIFICATION_EXPIRED, 'Verification request has expired')
+                    return next();
+                }
 
-            vr.update({beenUsed: true}).then( (vr) => {
+                if (vr.beenUsed === true) {
+                    res.err(400, AUTH.REGISTER.VERIFICATION_USED, 'Verification code has been used')
+                    return next();
+                }
+
+                return vr.update({beenUsed: true});
+            })
+            .then((vr) => {
                 let salt = bcrypt.genSaltSync(10);
                 let hash = bcrypt.hashSync(params.password, salt);
 
@@ -101,15 +107,16 @@ router.post('/register', (req, res, next) => {
                     phoneNumber: vr.phoneNumber,
                     password:    hash
                 });
-
-            }).then((user) => {
-                delete user.dataValues.password;
-                res.json(user);
-            }).catch((err) => {
+            })
+            .then((user) => {
+                return signUserWithToken(user)
+            })
+            .then((signedUser) => {
+                res.status(201).json(signedUser)
+            })
+            .catch((err) => {
                 res.err(500, AUTH.REGISTER.REGISTER_FAILED, err)
-            });
-
-        })
+            })
 
     } else {
         res.err(400, GENERIC.MISSING_PARAMS, 'Missing required parameters')
