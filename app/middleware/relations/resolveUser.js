@@ -14,7 +14,8 @@ export default function resolveUser(req, res, next)  {
                 res.err(404, 'User not found!')
             } else {
                 req.user = loggedInUser;
-                return next();
+                next();
+                return null;
             }
         })
         .catch(function (err) {
