@@ -1,7 +1,8 @@
 'use strict'
 
-import jwt from 'jsonwebtoken'
-import { config } from '../utils';
+import jwt         from 'jsonwebtoken'
+
+import { config }  from './config';
 
 function decodeJWT(token) {
     return new Promise(function (resolve, reject) {
@@ -18,5 +19,32 @@ function decodeJWT(token) {
     });
 }
 
-export { decodeJWT }
+function signUserWithToken(user) {
+
+    // Don't sign these values, since they take too much space!
+    delete user.dataValues.password;
+    delete user.dataValues.token;
+    delete user.dataValues.contactsList;
+
+    return new Promise(function (resolve, reject) {
+        jwt.sign(user.dataValues, config.jwt_secret, {
+            issuer:    user.dataValues.phoneNumber,
+            expiresIn: '7 days'
+        }, token => {
+
+        user.update({ token: token })
+            .then((user) => {
+                delete user.dataValues.password;
+                delete user.dataValues.contactsList;
+
+                resolve(user);
+            })
+            .catch( err => {
+                reject(err)
+            });
+        })
+    })
+}
+
+export { decodeJWT, signUserWithToken }
 
