@@ -1,7 +1,8 @@
 'use strict'
 
-import { config, decodeJWT } from '../utils';
-import { GENERIC }           from '../utils/errorTypes.js';
+import { GENERIC }   from '../utils/errorTypes';
+import { config}     from '../utils/config';
+import { decodeJWT } from '../utils/JWT';
 
 export default function verifyJWT(req, res, next)  {
     let token = req.headers['authorization']

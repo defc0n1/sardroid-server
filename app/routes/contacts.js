@@ -23,7 +23,7 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
         let numberList = _.map(params.contactsList, 'phoneNumber');
 
         // Then, we find all the registered users that match the numbers that were sent for syncing.
-        User.findAll({
+        return User.findAll({
             attributes: ['phoneNumber'] ,
             where: { phoneNumber: { $in: numberList}}
         })

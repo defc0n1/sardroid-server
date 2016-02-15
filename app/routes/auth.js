@@ -5,8 +5,9 @@ import express      from 'express';
 import jwt          from 'jsonwebtoken';
 import twilio       from 'twilio';
 
+import generateRandomPin          from '../utils/generateRandomPin';
 import models                     from '../models';
-import generateRandomPin      from '../utils/generateRandomPin';
+import sendSMS                    from '../utils/sendSMS';
 import { AUTH, GENERIC }          from '../utils/errorTypes.js';
 import { VERIFICATION_TYPES }     from '../utils/verificationTypes.js';
 import { config }                 from '../utils';
@@ -16,8 +17,6 @@ let User                = models.User;
 let VerificationRequest = models.VerificationRequest;
 
 let router = express.Router();
-
-let twilioClient = new twilio.RestClient(config.twilio.accountSid, config.twilio.authToken);
 
 router.post('/verification', (req, res, next) => {
 
@@ -45,27 +44,20 @@ router.post('/verification', (req, res, next) => {
 
             let verificationCode = generateRandomPin(6);
 
-            VerificationRequest.create({
+            return VerificationRequest.create({
                 phoneNumber:      params.phoneNumber,
                 verificationCode: verificationCode,
                 expireDate:       date,
                 beenUsed:         false
             }).then( (vr) => {
-                console.log(verificationCode);
-
-                twilioClient.messages.create({
-                       to   : `+${vr.phoneNumber}`,
-                       from : config.twilio.twilioNumber,
-                       body : `Your SoAR verification code is ${verificationCode}`
-                   }, function(error, message) {
-                       if (error) {
-                           console.log(error);
-                           res.err(500, GENERIC.TWILIO_ERROR, error.message)
-                       } else {
-                           res.status(201).json({message: 'Verification request created'});
-                       }
-                   });
-            });
+                return sendSMS(vr.phoneNumber, `Your SoAR verification code is ${verificationCode}`)
+            })
+            .then(function (results) {
+               res.status(201).json({message: 'Verification request created'});
+            })
+            .catch(function (error) {
+               res.err(500, GENERIC.TWILIO_ERROR, error.message)
+            })
         })
 
     }

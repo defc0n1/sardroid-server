@@ -5,7 +5,7 @@
  */
 
 import { log, LOG_TYPES } from './log';
-import decodeJWT          from './decodeJWT';
+import { decodeJWT }      from './JWT';
 
 const EVENT_TYPES = {
     DISCONNECT      : 'disconnect',

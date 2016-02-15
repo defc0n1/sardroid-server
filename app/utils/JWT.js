@@ -3,7 +3,7 @@
 import jwt from 'jsonwebtoken'
 import { config } from '../utils';
 
-export default function decodeJWT(token) {
+function decodeJWT(token) {
     return new Promise(function (resolve, reject) {
 
        jwt.verify(token, config.jwt_secret, (err, decoded) => {
@@ -17,4 +17,6 @@ export default function decodeJWT(token) {
 
     });
 }
+
+export { decodeJWT }
 
