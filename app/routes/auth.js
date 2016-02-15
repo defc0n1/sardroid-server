@@ -2,12 +2,12 @@
 
 import bcrypt       from 'bcryptjs';
 import express      from 'express';
-import jwt          from 'jsonwebtoken';
 import twilio       from 'twilio';
 
 import generateRandomPin          from '../utils/generateRandomPin';
 import models                     from '../models';
 import sendSMS                    from '../utils/sendSMS';
+import { signUserWithToken }      from '../utils/JWT';
 import { AUTH, GENERIC }          from '../utils/errorTypes.js';
 import { VERIFICATION_TYPES }     from '../utils/verificationTypes.js';
 import { config }                 from '../utils';
@@ -140,27 +140,14 @@ router.post('/login', (req, res, next) => {
                     return next();
                 }
 
-                delete user.dataValues.password;
-                delete user.dataValues.token;
-                delete user.dataValues.contactsList;
-
-                jwt.sign(user.dataValues, config.jwt_secret, {
-                    issuer:    user.phoneNumber,
-                    expiresIn: '7 days'
-                }, token => {
-
-                    user.update({ token: token })
-                    .then((user) => {
-                        delete user.dataValues.password;
-                        delete user.dataValues.contactsList;
-
-                        res.status(200).json({user});
+                signUserWithToken(user)
+                    .then((signedUser) => {
+                        res.status(200).json(signedUser);
                     })
-                    .catch( err => {
+                    .catch((error) => {
+                        console.log(error);
                         res.err(500, GENERIC.UNSPECIFIED_ERROR, err)
-                    });
-
-                })
+                    })
             })
         })
 
@@ -225,7 +212,7 @@ router.post('/resetpw',  (req, res, next) => {
     }
 });
 
-router.delete('/logout', verifyJWT, resolveUser,  (req, res, next) => {
+router.delete('/logout', verifyJWT, resolveUser, (req, res, next) => {
         req.user.update({ token: null })
         .then( results => {
             res.status(200).json({ message: 'Logged out succesfully' })

@@ -1,8 +1,7 @@
 'use strict'
 
 import jwt         from 'jsonwebtoken'
-
-import { config }  from './config';
+import config   from './config';
 
 function decodeJWT(token) {
     return new Promise(function (resolve, reject) {
