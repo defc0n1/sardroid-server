@@ -20,7 +20,9 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
     if  (params.contactsList) {
 
         // First, we reduce the sent contacts list to simply the phone numbers.
-        let numberList = _.map(params.contactsList, 'phoneNumber');
+        let numberList = _.map(params.contactsList, function (c) {
+            return c.phoneNumber.replace('+', '');
+        });
 
         // Then, we find all the registered users that match the numbers that were sent for syncing.
         return User.findAll({
