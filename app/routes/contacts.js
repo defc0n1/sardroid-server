@@ -24,6 +24,7 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
             return c.phoneNumber.replace('+', '');
         });
 
+        console.log(numberList);
         // Then, we find all the registered users that match the numbers that were sent for syncing.
         return User.findAll({
             attributes: ['phoneNumber'] ,
@@ -31,6 +32,7 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
         })
         .then( registeredNumbers => {
 
+            console.log(registeredNumbers);
             let formattedRegisteredNumbers = _.map(registeredNumbers, 'dataValues.phoneNumber');
             // Finally, we filter the sent contacts list down to those matching registered SoAR users.
             let validContacts = _.filter(params.contactsList, contact => {
