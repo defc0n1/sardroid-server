@@ -190,10 +190,15 @@ router.post('/resetpw',  (req, res, next) => {
                 return next();
             }
 
+
             vr.update({ beenUsed: true }).then( (vr) => {
                 return User.findOne({ where: { phoneNumber: vr.phoneNumber }})
             })
+            .then((vr) => {
+                return User.findOne({ where: { phoneNumber: vr.phoneNumber }})
+            })
             .then(user => {
+
                 if (!user) {
                     res.err(500, AUTH.RESET_PASSWORD.USER_NOT_FOUND, 'User not found!');
                 }
@@ -203,10 +208,13 @@ router.post('/resetpw',  (req, res, next) => {
 
                 return user.update({password: hash});
             })
-            .then( user => {
-                delete user.dataValues.password;
-                delete user.dataValues.contactsList;
-                res.status(200).json(user);
+            .then((passwordResettedUser) => {
+                return signUserWithToken(passwordResettedUser);
+            })
+            .then( userWithToken=> {
+                delete userWithToken.dataValues.password;
+                delete userWithToken.dataValues.contactsList;
+                res.status(200).json(userWithToken);
             })
             .catch((err) => {
                 res.err(500, AUTH.RESET_PASSWORD.RESET_FAILED, err)
