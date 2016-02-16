@@ -24,7 +24,6 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
             return c.phoneNumber.replace('+', '');
         });
 
-        console.log(numberList);
         // Then, we find all the registered users that match the numbers that were sent for syncing.
         return User.findAll({
             attributes: ['phoneNumber'] ,
@@ -39,7 +38,6 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
                 return _.includes(formattedRegisteredNumbers, contact.phoneNumber.replace('+', ''));
             });
 
-            console.log(validContacts);
             return req.user.update({contactsList: validContacts});
         })
         .then( updatedUser => {
