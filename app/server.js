@@ -19,7 +19,7 @@ app.use(rollbar.errorHandler(config.rollbar.postToken, {
 app.use(compression());
 app.use(jsonErr);
 app.use(cors());
-app.use(bodyParser.json())
+app.use(bodyParser.json({limit: '50mb'}));
 
 app.use('/auth', auth);
 app.use('/user', contacts);
