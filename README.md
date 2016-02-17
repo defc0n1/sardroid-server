@@ -67,9 +67,8 @@ on the local filesystem with the -v argument.
 
 ```sh
 
-    cd ..
-    docker build sardroid-server
-    docker run --name soar-server --env-file sardroid.env -v <REPO-ABSOLUTE-PATH>/:/sardroid -p 9000:9000 --link soardb:postgres -d <DOCKER-IMAGE-ID>
+    docker pull melonmanchan/sardroid-server
+    docker run --name soar-server --env-file sardroid.env -v <REPO-ABSOLUTE-PATH>/:/sardroid -p 9000:9000 --link soardb:postgres -d melonmanchan/sardroid-server
 
 ```
 
