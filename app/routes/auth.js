@@ -2,7 +2,6 @@
 
 import bcrypt       from 'bcryptjs';
 import express      from 'express';
-import twilio       from 'twilio';
 
 import generateRandomPin          from '../utils/generateRandomPin';
 import models                     from '../models';
@@ -31,11 +30,11 @@ router.post('/verification', (req, res, next) => {
         User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
 
             if (user && params.verificationType === VERIFICATION_TYPES.REGISTER) {
-                res.err(400, AUTH.VERIFICATION.USER_EXISTS, 'User already exists')
+                res.err(400, AUTH.VERIFICATION.USER_EXISTS, 'User already exists');
                 return next();
             }
             else if (!user && params.verificationType === VERIFICATION_TYPES.RESET_PASSWORD) {
-                res.err(404, AUTH.VERIFICATION.USER_NOT_FOUND, 'User not found')
+                res.err(404, AUTH.VERIFICATION.USER_NOT_FOUND, 'User not found');
                 return next();
             }
 
@@ -50,20 +49,20 @@ router.post('/verification', (req, res, next) => {
                 expireDate:       date,
                 beenUsed:         false
             }).then( (vr) => {
-                return sendSMS(vr.phoneNumber, `Your SoAR verification code is ${verificationCode}`)
+                return sendSMS(vr.phoneNumber, `${verificationCode} is your SoAR verification code`);
             })
-            .then(function (results) {
+            .then(function () {
                res.status(201).json({message: 'Verification request created'});
             })
             .catch(function (error) {
-               res.err(500, GENERIC.TWILIO_ERROR, error.message)
+                res.err(500, GENERIC.TWILIO_ERROR, error.message);
             })
         })
 
     }
     else {
-        if (!params.phoneNumber)      res.err(400, AUTH.VERIFICATION.NUMBER_MISSING, 'Phone number is required!')
-        if (!params.verificationType) res.err(400, AUTH.VERIFICATION.TYPE_MISSING,   'Verification type is required')
+        if (!params.phoneNumber)      res.err(400, AUTH.VERIFICATION.NUMBER_MISSING, 'Phone number is required!');
+        if (!params.verificationType) res.err(400, AUTH.VERIFICATION.TYPE_MISSING,   'Verification type is required');
     }
 });
 
@@ -88,12 +87,12 @@ router.post('/register', (req, res, next) => {
                 let expireDate = new Date(vr.expireDate);
 
                 if (new Date() > expireDate) {
-                    res.err(400, AUTH.REGISTER.VERIFICATION_EXPIRED, 'Verification request has expired')
+                    res.err(400, AUTH.REGISTER.VERIFICATION_EXPIRED, 'Verification request has expired');
                     return next();
                 }
 
                 if (vr.beenUsed === true) {
-                    res.err(400, AUTH.REGISTER.VERIFICATION_USED, 'Verification code has been used')
+                    res.err(400, AUTH.REGISTER.VERIFICATION_USED, 'Verification code has been used');
                     return next();
                 }
 
@@ -109,17 +108,17 @@ router.post('/register', (req, res, next) => {
                 });
             })
             .then((user) => {
-                return signUserWithToken(user)
+                return signUserWithToken(user);
             })
             .then((signedUser) => {
-                res.status(201).json(signedUser)
+                res.status(201).json(signedUser);
             })
             .catch((err) => {
-                res.err(500, AUTH.REGISTER.REGISTER_FAILED, err)
+                res.err(500, AUTH.REGISTER.REGISTER_FAILED, err);
             })
 
     } else {
-        res.err(400, GENERIC.MISSING_PARAMS, 'Missing required parameters')
+        res.err(400, GENERIC.MISSING_PARAMS, 'Missing required parameters');
     }
 });
 
@@ -131,19 +130,19 @@ router.post('/login', (req, res, next) => {
         User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
 
             if (!user) {
-                res.err(404, AUTH.LOGIN.USER_NOT_FOUND, 'User not found')
+                res.err(404, AUTH.LOGIN.USER_NOT_FOUND, 'User not found');
                 return next();
             }
 
             bcrypt.compare(params.password, user.password, (err, response) => {
 
                 if (err) {
-                    res.err(500, GENERIC.LOGIN.BCRYPT_ERROR, err)
+                    res.err(500, GENERIC.LOGIN.BCRYPT_ERROR, err);
                     return next();
                 }
 
                 if (response === false) {
-                    res.err(401, AUTH.LOGIN.WRONG_PASSWORD, 'Wrong password!')
+                    res.err(401, AUTH.LOGIN.WRONG_PASSWORD, 'Wrong password!');
                     return next();
                 }
 
@@ -153,14 +152,14 @@ router.post('/login', (req, res, next) => {
                     })
                     .catch((error) => {
                         console.log(error);
-                        res.err(500, GENERIC.UNSPECIFIED_ERROR, err)
+                        res.err(500, GENERIC.UNSPECIFIED_ERROR, err);
                     })
             })
         })
 
     }
     else {
-        res.err(400, GENERIC.MISSING_PARAMS, 'Phone number and password are required!' )
+        res.err(400, GENERIC.MISSING_PARAMS, 'Phone number and password are required!' );
     }
 });
 
@@ -181,21 +180,21 @@ router.post('/resetpw',  (req, res, next) => {
             let expireDate = new Date(vr.expireDate);
 
             if (new Date() > expireDate) {
-                res.err(400, AUTH.RESET_PASSWORD.VERIFICATION_EXPIRED, 'Verification request has expired')
+                res.err(400, AUTH.RESET_PASSWORD.VERIFICATION_EXPIRED, 'Verification request has expired');
                 return next();
             }
 
             if(vr.beenUsed === true) {
-                res.err(400, AUTH.RESET_PASSWORD.VERIFICATION_USED, 'Verification code has been used')
+                res.err(400, AUTH.RESET_PASSWORD.VERIFICATION_USED, 'Verification code has been used');
                 return next();
             }
 
 
             vr.update({ beenUsed: true }).then( (vr) => {
-                return User.findOne({ where: { phoneNumber: vr.phoneNumber }})
+                return User.findOne({ where: { phoneNumber: vr.phoneNumber }});
             })
             .then((vr) => {
-                return User.findOne({ where: { phoneNumber: vr.phoneNumber }})
+                return User.findOne({ where: { phoneNumber: vr.phoneNumber }});
             })
             .then(user => {
 
@@ -217,7 +216,7 @@ router.post('/resetpw',  (req, res, next) => {
                 res.status(200).json(userWithToken);
             })
             .catch((err) => {
-                res.err(500, AUTH.RESET_PASSWORD.RESET_FAILED, err)
+                res.err(500, AUTH.RESET_PASSWORD.RESET_FAILED, err);
             });
         })
 
@@ -230,12 +229,12 @@ router.post('/resetpw',  (req, res, next) => {
 router.delete('/logout', verifyJWT, resolveUser, (req, res, next) => {
         req.user.update({ token: null })
         .then( results => {
-            res.status(200).json({ message: 'Logged out succesfully' })
+            res.status(200).json({ message: 'Logged out succesfully' });
         })
         .catch(err => {
-            res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found')
+            res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found');
         })
 });
 
-export default router
+export default router;
 
