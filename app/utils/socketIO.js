@@ -13,39 +13,38 @@ const EVENT_TYPES = {
     TOKEN_VALID     : 'token_valid',
     TOKEN_INVALID   : 'token_invalid',
     CONTACT_ONLINE  : 'contact:online',
-    CONTACT_OFFLINE : 'contact:offline'
+    CONTACT_OFFLINE : 'contact:offline',
 };
 
 let io;
 
 let connections = [];
 
-function createSocketIO(server, app) {
+function createSocketIO(server) {
     io = require('socket.io')(server);
-    io.on(EVENT_TYPES.CONNECTION, (socket) => {
 
+    io.on(EVENT_TYPES.CONNECTION, (socket) => {
         socket.on(EVENT_TYPES.DISCONNECT, () => {
             log(`Socket disconnected with id ${socket.id}`, LOG_TYPES.WARN);
 
-            let i = connections.indexOf(socket);
+            const i = connections.indexOf(socket);
             connections.splice(i, 1);
         });
 
         decodeJWT(socket.handshake.query.token)
-            .then( results => {
+            .then(results => {
                 log(`Socket connected with id ${socket.id}`);
                 socket.emit('token_valid',  {});
                 socket.user = results;
                 connections.push(socket);
-
             })
-            .catch(error => {
+            .catch(() => {
                 log(`Token from ${socket.id} is invalid`, LOG_TYPES.ALERT)
                 socket.emit('token_invalid', {});
                 socket.disconnect(true);
-            })
+            });
     });
 }
 
-export { io, connections, createSocketIO, EVENT_TYPES }
+export { io, connections, createSocketIO, EVENT_TYPES };
 

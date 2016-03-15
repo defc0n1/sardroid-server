@@ -1,36 +1,33 @@
-'use strict'
+'use strict';
 
 import twilio     from 'twilio';
 
 import { config }         from '../utils';
-import { log, LOG_TYPES } from './log';
+import { log } from './log';
 
-let twilioClient = new twilio.RestClient(config.twilio.accountSid, config.twilio.authToken);
+const twilioClient = new twilio.RestClient(config.twilio.accountSid, config.twilio.authToken);
 
 export default function sendSMS(toNumber, message) {
     return new Promise(function (resolve, reject) {
-
         // Twilio costs us money, so if we're just developing let's not send anything!
         if (process.env.NODE_ENV !== 'production') {
-            log(`Pretending to send SMS '${message}' to ${toNumber}`)
-            return resolve('ok!!!');
-        }
-
-        twilioClient.messages.create(
-            {
-               to   : `+${toNumber}`,
-               from : config.twilio.twilioNumber,
-               body : message
-            }, function (error, message) {
-
+            log(`Pretending to send SMS '${message}' to ${toNumber}`);
+            resolve('ok!!!');
+        } else {
+            twilioClient.messages.create(
+                {
+                    to   : `+${toNumber}`,
+                    from : config.twilio.twilioNumber,
+                    body : message,
+                }, function (error, output) {
                 if (error) {
-                    return reject(error);
+                    reject(error);
                 } else {
-                    resolve(message);
+                    resolve(output);
                 }
-
             }
-        )
-    })
+            );
+        }
+    });
 }
 

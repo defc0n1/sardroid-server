@@ -7,22 +7,21 @@ import config from './config';
 import { io, EVENT_TYPES } from './socketIO';
 
 let peerJSConnections = [];
-let peerJSOptions     = config.peerJSOptions;
+const peerJSOptions   = config.peerJSOptions;
 
-function createPeerJS (server, app) {
-    let ExpressPeerServer = require('peer').ExpressPeerServer(server, peerJSOptions);
+function createPeerJS(server, app) {
+    const expressPeerServer = require('peer').ExpressPeerServer(server, peerJSOptions);
 
-    ExpressPeerServer.on('connection',  (id) => {
-        log('PeerJS Connection from: ' + id);
+    expressPeerServer.on('connection',  (id) => {
+        log(`PeerJS connection from: ${id}`);
 
         peerJSConnections.push(id);
 
-        //TODO: Proper way of doing online contacts, not this!
         io.emit(EVENT_TYPES.CONTACT_ONLINE, { peerJSId: id });
     });
 
-    ExpressPeerServer.on('disconnect', (id) => {
-        log('PeerJS Disconnection from: ' + id, LOG_TYPES.WARN);
+    expressPeerServer.on('disconnect', (id) => {
+        log(`PeerJS disconnection from: ${id}`, LOG_TYPES.WARN);
 
         let i = peerJSConnections.indexOf(id);
         peerJSConnections.splice(i, 1);
@@ -30,8 +29,8 @@ function createPeerJS (server, app) {
         io.emit(EVENT_TYPES.CONTACT_OFFLINE, { peerJSId: id });
     });
 
-    app.use('/peerjs', ExpressPeerServer);
+    app.use('/peerjs', expressPeerServer);
 }
 
-export { createPeerJS, peerJSConnections }
+export { createPeerJS, peerJSConnections };
 
