@@ -9,58 +9,51 @@ import sendSMS                    from '../utils/sendSMS';
 import { signUserWithToken }      from '../utils/JWT';
 import { AUTH, GENERIC }          from '../utils/errorTypes.js';
 import { VERIFICATION_TYPES }     from '../utils/verificationTypes.js';
-import { config }                 from '../utils';
 import { verifyJWT, resolveUser } from '../middleware';
 
-let User                = models.User;
-let VerificationRequest = models.VerificationRequest;
+const User                = models.User;
+const VerificationRequest = models.VerificationRequest;
 
-let router = express.Router();
+const router = express.Router();
 
 router.post('/verification', (req, res, next) => {
-
-    let params = req.body;
+    const params = req.body;
 
     if (params.phoneNumber && params.verificationType) {
         if (params.verificationType !== VERIFICATION_TYPES.RESET_PASSWORD && params.verificationType !== VERIFICATION_TYPES.REGISTER) {
-           res.err(400, AUTH.VERIFICATION.INVALID_TYPE, 'Invalid verification request type!');
-           return next();
+            res.err(400, AUTH.VERIFICATION.INVALID_TYPE, 'Invalid verification request type!');
+            return next();
         }
 
-        User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
-
+        User.findOne({ where: { phoneNumber: params.phoneNumber } }).then((user) => {
             if (user && params.verificationType === VERIFICATION_TYPES.REGISTER) {
                 res.err(400, AUTH.VERIFICATION.USER_EXISTS, 'User already exists');
                 return next();
-            }
-            else if (!user && params.verificationType === VERIFICATION_TYPES.RESET_PASSWORD) {
+            } else if (!user && params.verificationType === VERIFICATION_TYPES.RESET_PASSWORD) {
                 res.err(404, AUTH.VERIFICATION.USER_NOT_FOUND, 'User not found');
                 return next();
             }
 
-            let date = new Date();
+            const date = new Date();
             date.setMinutes(date.getMinutes() + 60);
-
-            let verificationCode = generateRandomPin(6);
+            const verificationCode = generateRandomPin(6);
 
             return VerificationRequest.create({
                 phoneNumber:      params.phoneNumber,
                 verificationCode: verificationCode,
                 expireDate:       date,
-                beenUsed:         false
-            }).then( (vr) => {
+                beenUsed:         false,
+            }).then((vr) => {
                 return sendSMS(vr.phoneNumber, `${verificationCode} is your SoAR verification code`);
             })
             .then(function () {
-               res.status(201).json({message: 'Verification request created'});
+                res.status(201).json({ message: 'Verification request created' });
             })
             .catch(function (error) {
                 res.err(500, GENERIC.TWILIO_ERROR, error.message);
-            })
+            });
         })
-
-    }
-    else {
+    } else {
         if (!params.phoneNumber)      res.err(400, AUTH.VERIFICATION.NUMBER_MISSING, 'Phone number is required!');
         if (!params.verificationType) res.err(400, AUTH.VERIFICATION.TYPE_MISSING,   'Verification type is required');
     }

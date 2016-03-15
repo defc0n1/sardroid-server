@@ -1,25 +1,24 @@
 'use strict';
 
 import models      from '../../models';
-import { GENERIC } from '../../utils/errorTypes.js';
 
-let User = models.User;
+const User = models.User;
 
 export default function resolveUser(req, res, next)  {
-    let jwtUserId = req.user.id;
+    const jwtUserId = req.user.id;
 
     User.findById(jwtUserId)
-        .then(function (loggedInUser) {
+        .then(loggedInUser => {
             if (!loggedInUser) {
-                res.err(404, 'User not found!')
+                res.err(404, 'User not found!');
             } else {
                 req.user = loggedInUser;
                 next();
                 return null;
             }
         })
-        .catch(function (err) {
-            res.err(500)
-        })
-};
+        .catch(() => {
+            res.err(500);
+        });
+}
 
