@@ -1,7 +1,7 @@
 'use strict';
 
 /*
- * Socket.io related things go !
+ * Socket.io related things go here!
  */
 
 import { log, LOG_TYPES } from './log';
@@ -18,7 +18,7 @@ const EVENT_TYPES = {
 
 let io;
 
-let connections = [];
+const connections = [];
 
 function createSocketIO(server) {
     io = require('socket.io')(server);
@@ -39,7 +39,7 @@ function createSocketIO(server) {
                 connections.push(socket);
             })
             .catch(() => {
-                log(`Token from ${socket.id} is invalid`, LOG_TYPES.ALERT)
+                log(`Token from ${socket.id} is invalid`, LOG_TYPES.ALERT);
                 socket.emit('token_invalid', {});
                 socket.disconnect(true);
             });

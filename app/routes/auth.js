@@ -20,7 +20,8 @@ router.post('/verification', (req, res, next) => {
     const params = req.body;
 
     if (params.phoneNumber && params.verificationType) {
-        if (params.verificationType !== VERIFICATION_TYPES.RESET_PASSWORD && params.verificationType !== VERIFICATION_TYPES.REGISTER) {
+        if (params.verificationType !== VERIFICATION_TYPES.RESET_PASSWORD
+            && params.verificationType !== VERIFICATION_TYPES.REGISTER) {
             res.err(400, AUTH.VERIFICATION.INVALID_TYPE, 'Invalid verification request type!');
             return next();
         }
@@ -40,7 +41,7 @@ router.post('/verification', (req, res, next) => {
 
             return VerificationRequest.create({
                 phoneNumber:      params.phoneNumber,
-                verificationCode: verificationCode,
+                verificationCode,
                 expireDate:       date,
                 beenUsed:         false,
             }).then((vr) => {
@@ -52,83 +53,79 @@ router.post('/verification', (req, res, next) => {
             .catch(function (error) {
                 res.err(500, GENERIC.TWILIO_ERROR, error.message);
             });
-        })
+        });
     } else {
         if (!params.phoneNumber)      res.err(400, AUTH.VERIFICATION.NUMBER_MISSING, 'Phone number is required!');
         if (!params.verificationType) res.err(400, AUTH.VERIFICATION.TYPE_MISSING,   'Verification type is required');
     }
+
+    return next();
 });
 
 router.post('/register', (req, res, next) => {
-    let params = req.body;
+    const params = req.body;
 
     if (params.verificationCode && params.password) {
+        VerificationRequest.findOne({
+            where: {
+                verificationCode:  params.verificationCode,
+                beenUsed: false,
+            },
+        })
+        .then((vr) => {
+            if (!vr) {
+                res.err(404, AUTH.REGISTER.NO_VERIFICATION, 'No verification request found');
+                return next();
+            }
 
-            VerificationRequest.findOne({
-                where: {
-                    verificationCode:  params.verificationCode,
-                    beenUsed: false
-                }
-            })
-            .then((vr) => {
+            const expireDate = new Date(vr.expireDate);
 
-                if (!vr) {
-                    res.err(404, AUTH.REGISTER.NO_VERIFICATION, 'No verification request found');
-                    return next();
-                }
+            if (new Date() > expireDate) {
+                res.err(400, AUTH.REGISTER.VERIFICATION_EXPIRED, 'Verification request has expired');
+                return next();
+            }
 
-                let expireDate = new Date(vr.expireDate);
+            if (vr.beenUsed === true) {
+                res.err(400, AUTH.REGISTER.VERIFICATION_USED, 'Verification code has been used');
+                return next();
+            }
 
-                if (new Date() > expireDate) {
-                    res.err(400, AUTH.REGISTER.VERIFICATION_EXPIRED, 'Verification request has expired');
-                    return next();
-                }
+            return vr.update({ beenUsed: true });
+        })
+        .then((vr) => {
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(params.password, salt);
 
-                if (vr.beenUsed === true) {
-                    res.err(400, AUTH.REGISTER.VERIFICATION_USED, 'Verification code has been used');
-                    return next();
-                }
-
-                return vr.update({beenUsed: true});
-            })
-            .then((vr) => {
-                let salt = bcrypt.genSaltSync(10);
-                let hash = bcrypt.hashSync(params.password, salt);
-
-                return User.create({
-                    phoneNumber: vr.phoneNumber,
-                    password:    hash
-                });
-            })
-            .then((user) => {
-                return signUserWithToken(user);
-            })
-            .then((signedUser) => {
-                res.status(201).json(signedUser);
-            })
-            .catch((err) => {
-                res.err(500, AUTH.REGISTER.REGISTER_FAILED, err);
-            })
-
+            return User.create({
+                phoneNumber: vr.phoneNumber,
+                password:    hash,
+            });
+        })
+        .then((user) => {
+            return signUserWithToken(user);
+        })
+        .then((signedUser) => {
+            res.status(201).json(signedUser);
+        })
+        .catch((err) => {
+            res.err(500, AUTH.REGISTER.REGISTER_FAILED, err);
+        });
     } else {
         res.err(400, GENERIC.MISSING_PARAMS, 'Missing required parameters');
     }
 });
 
 router.post('/login', (req, res, next) => {
-
-    let params = req.body;
+    const params = req.body;
 
     if (params.phoneNumber && params.password) {
-        User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
-
+        User.findOne({ where: { phoneNumber: params.phoneNumber } }).then((user) => {
             if (!user) {
                 res.err(404, AUTH.LOGIN.USER_NOT_FOUND, 'User not found');
                 return next();
             }
 
             bcrypt.compare(params.password, user.password, (err, response) => {
-
                 if (err) {
                     res.err(500, GENERIC.LOGIN.BCRYPT_ERROR, err);
                     return next();
@@ -146,87 +143,81 @@ router.post('/login', (req, res, next) => {
                     .catch((error) => {
                         console.log(error);
                         res.err(500, GENERIC.UNSPECIFIED_ERROR, err);
-                    })
-            })
-        })
-
-    }
-    else {
-        res.err(400, GENERIC.MISSING_PARAMS, 'Phone number and password are required!' );
+                    });
+            });
+        });
+    } else {
+        res.err(400, GENERIC.MISSING_PARAMS, 'Phone number and password are required!');
     }
 });
 
 router.post('/resetpw',  (req, res, next) => {
-
-    let params = req.body;
+    const params = req.body;
 
     if (params.verificationCode && params.password) {
-        VerificationRequest.findOne({where: {
-            verificationCode:  params.verificationCode
-        }}).then(function (vr) {
-
+        VerificationRequest.findOne({ where: {
+            verificationCode:  params.verificationCode,
+        } }).then(function (vr) {
             if (!vr) {
                 res.err(404, AUTH.RESET_PASSWORD.NO_VERIFICATION, 'No verification request found');
                 return next();
             }
 
-            let expireDate = new Date(vr.expireDate);
+            const expireDate = new Date(vr.expireDate);
 
             if (new Date() > expireDate) {
                 res.err(400, AUTH.RESET_PASSWORD.VERIFICATION_EXPIRED, 'Verification request has expired');
                 return next();
             }
 
-            if(vr.beenUsed === true) {
+            if (vr.beenUsed === true) {
                 res.err(400, AUTH.RESET_PASSWORD.VERIFICATION_USED, 'Verification code has been used');
                 return next();
             }
 
-
-            vr.update({ beenUsed: true }).then( (vr) => {
-                return User.findOne({ where: { phoneNumber: vr.phoneNumber }});
+            vr.update({ beenUsed: true }).then((vr) => {
+                return User.findOne({ where: { phoneNumber: vr.phoneNumber } });
             })
             .then((vr) => {
-                return User.findOne({ where: { phoneNumber: vr.phoneNumber }});
+                return User.findOne({ where: { phoneNumber: vr.phoneNumber } });
             })
             .then(user => {
-
                 if (!user) {
                     res.err(500, AUTH.RESET_PASSWORD.USER_NOT_FOUND, 'User not found!');
                 }
 
-                let salt = bcrypt.genSaltSync(10);
-                let hash = bcrypt.hashSync(params.password, salt);
+                const salt = bcrypt.genSaltSync(10);
+                const hash = bcrypt.hashSync(params.password, salt);
 
-                return user.update({password: hash});
+                return user.update({ password: hash });
             })
-            .then((passwordResettedUser) => {
+            .then(passwordResettedUser => {
                 return signUserWithToken(passwordResettedUser);
             })
-            .then( userWithToken=> {
+            .then(userWithToken => {
                 delete userWithToken.dataValues.password;
                 delete userWithToken.dataValues.contactsList;
                 res.status(200).json(userWithToken);
             })
-            .catch((err) => {
+            .catch(err => {
                 res.err(500, AUTH.RESET_PASSWORD.RESET_FAILED, err);
             });
-        })
-
-    }
-    else {
+        });
+    } else {
         res.err(400, GENERIC.MISSING_PARAMS, 'Verification code and password are required!');
     }
 });
 
 router.delete('/logout', verifyJWT, resolveUser, (req, res, next) => {
-        req.user.update({ token: null })
-        .then( results => {
-            res.status(200).json({ message: 'Logged out succesfully' });
-        })
-        .catch(err => {
-            res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found');
-        })
+    req.user.update({ token: null })
+    .then(() => {
+        res.status(200).json({ message: 'Logged out succesfully' });
+    })
+    .catch(() => {
+        res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found');
+    });
+
+    return next();
 });
 
 export default router;
