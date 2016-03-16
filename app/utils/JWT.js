@@ -39,7 +39,7 @@ function signUserWithToken(user) {
             });
         });
     });
-};
+}
 
 export { decodeJWT, signUserWithToken };
 
