@@ -13,13 +13,13 @@ const User = models.User;
 
 const router = express.Router();
 
-router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
+router.post('/contacts', verifyJWT, resolveUser, (req, res) => {
     const params = req.body;
 
     if  (params.contactsList) {
         // First, we reduce the sent contacts list to simply the phone numbers.
-        const numberList = _.map(params.contactsList, function (c) {
-            return c.phoneNumber.replace('+', '');
+        const numberList = _.map(params.contactsList, c => {
+            c.phoneNumber.replace('+', '');
         });
 
         // Then, we find all the registered users that match the numbers that were sent for syncing.

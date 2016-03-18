@@ -6,8 +6,8 @@ import config from './config';
 
 import { io, EVENT_TYPES } from './socketIO';
 
-let peerJSConnections = [];
-const peerJSOptions   = config.peerJSOptions;
+const peerJSConnections = [];
+const peerJSOptions     = config.peerJSOptions;
 
 function createPeerJS(server, app) {
     const expressPeerServer = require('peer').ExpressPeerServer(server, peerJSOptions);
@@ -23,7 +23,7 @@ function createPeerJS(server, app) {
     expressPeerServer.on('disconnect', (id) => {
         log(`PeerJS disconnection from: ${id}`, LOG_TYPES.WARN);
 
-        let i = peerJSConnections.indexOf(id);
+        const i = peerJSConnections.indexOf(id);
         peerJSConnections.splice(i, 1);
 
         io.emit(EVENT_TYPES.CONTACT_OFFLINE, { peerJSId: id });

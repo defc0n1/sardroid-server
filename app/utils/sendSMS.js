@@ -8,7 +8,7 @@ import { log } from './log';
 const twilioClient = new twilio.RestClient(config.twilio.accountSid, config.twilio.authToken);
 
 export default function sendSMS(toNumber, message) {
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         // Twilio costs us money, so if we're just developing let's not send anything!
         if (process.env.NODE_ENV !== 'production') {
             log(`Pretending to send SMS '${message}' to ${toNumber}`);
@@ -19,7 +19,7 @@ export default function sendSMS(toNumber, message) {
                     to   : `+${toNumber}`,
                     from : config.twilio.twilioNumber,
                     body : message,
-                }, function (error, output) {
+                }, (error, output) => {
                 if (error) {
                     reject(error);
                 } else {

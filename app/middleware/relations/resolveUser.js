@@ -14,11 +14,12 @@ export default function resolveUser(req, res, next)  {
             } else {
                 req.user = loggedInUser;
                 next();
-                return null;
             }
         })
         .catch(() => {
             res.err(500);
         });
+
+    return null;
 }
 

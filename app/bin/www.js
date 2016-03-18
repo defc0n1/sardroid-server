@@ -13,8 +13,8 @@ let server = null;
 models.sequelize.sync({ force: false }).then(() => {
     if (config.https.inUse === true) {
         const ca = [];
-        let cert = [];
         let line;
+        let cert = [];
         let caFile = fs.readFileSync(config.https.ca).toString();
         caFile = caFile.split('\n');
 

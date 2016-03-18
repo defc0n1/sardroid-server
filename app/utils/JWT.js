@@ -4,7 +4,7 @@ import jwt      from 'jsonwebtoken';
 import config   from './config';
 
 function decodeJWT(token) {
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         jwt.verify(token, config.jwt_secret, (err, decoded) => {
             if (err) {
                 console.log(err);
@@ -22,7 +22,7 @@ function signUserWithToken(user) {
     delete user.dataValues.token;
     delete user.dataValues.contactsList;
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         jwt.sign(user.dataValues, config.jwt_secret, {
             issuer:    user.dataValues.phoneNumber,
             expiresIn: '7 days',

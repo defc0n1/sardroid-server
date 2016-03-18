@@ -45,12 +45,12 @@ router.post('/verification', (req, res, next) => {
                 expireDate:       date,
                 beenUsed:         false,
             }).then((vr) => {
-                return sendSMS(vr.phoneNumber, `${verificationCode} is your SoAR verification code`);
+                sendSMS(vr.phoneNumber, `${verificationCode} is your SoAR verification code`);
             })
-            .then(function () {
+            .then(() =>{
                 res.status(201).json({ message: 'Verification request created' });
             })
-            .catch(function (error) {
+            .catch(error => {
                 res.err(500, GENERIC.TWILIO_ERROR, error.message);
             });
         });
@@ -102,7 +102,7 @@ router.post('/register', (req, res, next) => {
             });
         })
         .then((user) => {
-            return signUserWithToken(user);
+            signUserWithToken(user);
         })
         .then((signedUser) => {
             res.status(201).json(signedUser);
@@ -157,7 +157,7 @@ router.post('/resetpw',  (req, res, next) => {
     if (params.verificationCode && params.password) {
         VerificationRequest.findOne({ where: {
             verificationCode:  params.verificationCode,
-        } }).then(function (vr) {
+        } }).then(vr => {
             if (!vr) {
                 res.err(404, AUTH.RESET_PASSWORD.NO_VERIFICATION, 'No verification request found');
                 return next();
@@ -175,11 +175,8 @@ router.post('/resetpw',  (req, res, next) => {
                 return next();
             }
 
-            vr.update({ beenUsed: true }).then((vr) => {
-                return User.findOne({ where: { phoneNumber: vr.phoneNumber } });
-            })
-            .then((vr) => {
-                return User.findOne({ where: { phoneNumber: vr.phoneNumber } });
+            vr.update({ beenUsed: true }).then(() => {
+                User.findOne({ where: { phoneNumber: vr.phoneNumber } });
             })
             .then(user => {
                 if (!user) {
