@@ -32,8 +32,6 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
         .then( registeredNumbers => {
 
             let formattedRegisteredNumbers = _.map(registeredNumbers, 'dataValues.phoneNumber');
-            console.log('formatted numbers');
-            console.log(formattedRegisteredNumbers);
 
             // Finally, we filter the sent contacts list down to those matching registered SoAR users.
             let validContacts = _.filter(params.contactsList, contact => {
@@ -42,8 +40,6 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
             });
 
             let uniqueContacts = _.uniqBy(validContacts, 'phoneNumber');
-            console.log('unique contacts');
-            console.log(uniqueContacts);
 
             return req.user.update({contactsList: uniqueContacts});
         })
