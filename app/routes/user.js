@@ -2,7 +2,7 @@
 
 import express from 'express';
 import models  from '../models';
-import { resolveUser } from '../middleware';
+import { verifyJWT } from '../middleware';
 
 let User = models.User;
 
@@ -11,18 +11,15 @@ let router = express.Router();
 // Route to check if a user is registered
 router.get('/:phoneNumber/exists',  (req, res, next) => {
     let phoneNumber = req.params.phoneNumber;
-    let jsonResp = { phoneNumber: phoneNumber };
+    let found = false;
 
     User.findOne({ where: { phoneNumber: phoneNumber } })
         .then(user => {
             if (user) {
-                jsonResp.wasFound = true;
-                jsonResp.status = 404;
-            } else {
-                jsonResp.wasFound = false;
-                jsonResp.status = 200;
+                found = true;
             }
-            res.status(jsonResp.status).json(jsonResp);
+
+            res.status(200).json({ found: found, phoneNumber: phoneNumber });
         });
 });
 
