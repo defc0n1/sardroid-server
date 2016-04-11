@@ -10,7 +10,7 @@ let router = express.Router();
 
 // Route to check if a user is registered
 router.get('/:phoneNumber/exists',  (req, res, next) => {
-    let phoneNumber = req.params.phoneNumber;
+    let phoneNumber = req.params.phoneNumber.replace(/[+ ]/, '');
     let found = false;
 
     User.findOne({ where: { phoneNumber: phoneNumber } })
