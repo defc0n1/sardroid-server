@@ -4,7 +4,8 @@ module.exports = function(sequelize, DataTypes) {
     phoneNumber: {type: DataTypes.STRING, unique: true},
     password: DataTypes.STRING(1024),
     token: DataTypes.STRING(2048),
-    contactsList: DataTypes.JSONB
+    contactsList: DataTypes.JSONB,
+    lastSeen: DataTypes.DATE
   }, {
     classMethods: {
       associate: function(models) {
