@@ -47,7 +47,6 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
             res.status(200).json(updatedUser.contactsList);
         })
         .catch(err => {
-            console.log(err);
             res.err(500, USER.CONTACTS.SAVE_ERROR, 'Error saving contacts list!');
         })
 
@@ -58,19 +57,31 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
 
 router.get('/contacts', verifyJWT, resolveUser,  (req, res, next) => {
 
-        let contactsList  = req.user.contactsList;
+        let contactsList  = req.user.contactsList || [];
+        const numbersOnly = req.user.getContactsListNumbers();
 
-        // Add additional property to each contact, stating whether or not they're currently online or not
-        let listWithState =  _.map(contactsList, contact => {
+        return User.findAll({
+            attributes: ['phoneNumber', 'lastSeen'],
+            where: { phoneNumber: { $in: numbersOnly}}
+        })
+        .then( results => {
+            // Add additional property to each contact, stating whether or not they're currently online or not
+            let listWithState =  _.map(contactsList, contact => {
                 contact.currentState = _.includes(peerJSConnections, contact.phoneNumber) ? contactStates.ONLINE : contactStates.OFFLINE
+                contact.lastSeen = _.find(results, {'phoneNumber': contact.phoneNumber}).lastSeen;
                 return contact;
-        });
+            });
 
-        let sortedList = _.sortBy(listWithState, contact => {
+            let sortedList = _.sortBy(listWithState, contact => {
                 return contact.currentState === contactStates.OFFLINE;
-        });
+            });
 
-        res.json(sortedList);
+            res.json(sortedList);
+        })
+        .catch (err => {
+            // TODO: Correct error type here!
+            res.err(500, USER.CONTACTS.SAVE_ERROR, 'Error fetching contacts list!');
+        });
 });
 
 export default router

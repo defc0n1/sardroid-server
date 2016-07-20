@@ -1,4 +1,6 @@
 'use strict';
+var _ = require('lodash');
+
 module.exports = function(sequelize, DataTypes) {
   var User = sequelize.define('User', {
     phoneNumber: {type: DataTypes.STRING, unique: true},
@@ -11,6 +13,11 @@ module.exports = function(sequelize, DataTypes) {
       associate: function(models) {
         // associations can be defined here
       }
+    },
+    instanceMethods: {
+        getContactsListNumbers: function () {
+            return _.map(this.contactsList, 'phoneNumber');
+        }
     }
   });
   return User;
