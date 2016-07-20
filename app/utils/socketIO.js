@@ -6,6 +6,9 @@
 
 import { log, LOG_TYPES } from './log';
 import { decodeJWT }      from './JWT';
+import models             from '../models';
+
+const User = models.User;
 
 const EVENT_TYPES = {
     DISCONNECT      : 'disconnect',
@@ -35,9 +38,11 @@ function createSocketIO(server, app) {
             .then( results => {
                 log(`Socket connected with id ${socket.id}`);
                 socket.emit('token_valid',  {});
+                let lastSeen = Date.now();
+                results.lastSeen = lastSeen;
                 socket.user = results;
+                User.update({ lastSeen: lastSeen }, { where: { id: results.id } });
                 connections.push(socket);
-
             })
             .catch(error => {
                 log(`Token from ${socket.id} is invalid`, LOG_TYPES.ALERT)
