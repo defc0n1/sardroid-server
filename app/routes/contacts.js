@@ -73,7 +73,7 @@ router.get('/contacts', verifyJWT, resolveUser,  (req, res, next) => {
             });
 
             let sortedList = _.sortBy(listWithState, contact => {
-                return contact.currentState === contactStates.OFFLINE && -contact.lastSeen;
+                return -contact.lastSeen;
             });
 
             res.json(sortedList);
