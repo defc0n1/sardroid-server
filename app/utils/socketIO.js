@@ -16,12 +16,21 @@ const EVENT_TYPES = {
     TOKEN_VALID     : 'token_valid',
     TOKEN_INVALID   : 'token_invalid',
     CONTACT_ONLINE  : 'contact:online',
-    CONTACT_OFFLINE : 'contact:offline'
+    CONTACT_OFFLINE : 'contact:offline',
+    HEARTBEAT_PONG  : 'heartbeat_pong',
+    HEARTBEAT_PING  : 'heartbeat_ping'
 };
 
 let io;
 
 let connections = [];
+
+function sendHeartbeat() {
+    if (io) {
+        setTimeout(sendHeartbeat, 10000);
+        io.sockets.emit(EVENT_TYPES.HEARTBEAT_PING, { beat: 1 });
+    }
+}
 
 function createSocketIO(server, app) {
     io = require('socket.io')(server);
@@ -33,6 +42,8 @@ function createSocketIO(server, app) {
             let i = connections.indexOf(socket);
             connections.splice(i, 1);
         });
+
+        socket.on(EVENT_TYPES.HEARTBEAT_PONG, () => { });
 
         decodeJWT(socket.handshake.query.token)
             .then( results => {
@@ -50,6 +61,8 @@ function createSocketIO(server, app) {
                 socket.disconnect(true);
             })
     });
+
+    setTimeout(sendHeartbeat, 10000);
 }
 
 export { io, connections, createSocketIO, EVENT_TYPES }
