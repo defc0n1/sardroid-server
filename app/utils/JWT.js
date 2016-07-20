@@ -31,7 +31,7 @@ function signUserWithToken(user) {
             expiresIn: '7 days'
         }, token => {
 
-        user.update({ token: token })
+        user.update({ token: token, lastSeen: Date.now() })
             .then((user) => {
                 delete user.dataValues.password;
                 delete user.dataValues.contactsList;

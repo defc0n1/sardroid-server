@@ -39,6 +39,11 @@ function createSocketIO(server, app) {
         socket.on(EVENT_TYPES.DISCONNECT, () => {
             log(`Socket disconnected with id ${socket.id}`, LOG_TYPES.WARN);
 
+            if (socket.user) {
+                let lastSeen = Date.now();
+                User.update({ lastSeen: lastSeen }, { where: { id: socket.user.id } });
+            }
+
             let i = connections.indexOf(socket);
             connections.splice(i, 1);
         });
@@ -49,10 +54,7 @@ function createSocketIO(server, app) {
             .then( results => {
                 log(`Socket connected with id ${socket.id}`);
                 socket.emit('token_valid',  {});
-                let lastSeen = Date.now();
-                results.lastSeen = lastSeen;
                 socket.user = results;
-                User.update({ lastSeen: lastSeen }, { where: { id: results.id } });
                 connections.push(socket);
             })
             .catch(error => {
