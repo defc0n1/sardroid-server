@@ -7,9 +7,10 @@ import express     from 'express';
 import rollbar     from 'rollbar';
 
 import auth          from './routes/auth';
+import call          from './routes/call';
 import contacts      from './routes/contacts';
-import user          from './routes/user';
 import notifications from './routes/notification';
+import user          from './routes/user';
 
 import jsonErr     from './middleware/jsonErr.js';
 import { config }  from './utils/';
@@ -26,9 +27,10 @@ app.use(cors());
 app.use(bodyParser.json({limit: '50mb'}));
 
 app.use('/auth', auth);
+app.use('/call', call);
 app.use('/user', contacts);
-app.use('/user', user);
 app.use('/user', notifications);
+app.use('/user', user);
 
 export default app;
 

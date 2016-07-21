@@ -1,9 +1,10 @@
 'use strict';
-var _ = require('lodash');
+import _ from 'lodash';
+import { sendNotification } from '../utils/pushNotifications';
 
 module.exports = function(sequelize, DataTypes) {
   var User = sequelize.define('User', {
-    phoneNumber: {type: DataTypes.STRING, unique: true},
+    phoneNumber: { type: DataTypes.STRING, unique: true },
     password: DataTypes.STRING(1024),
     token: DataTypes.STRING(2048),
     contactsList: DataTypes.JSONB,
@@ -18,6 +19,9 @@ module.exports = function(sequelize, DataTypes) {
     instanceMethods: {
         getContactsListNumbers: function () {
             return _.map(this.contactsList, 'phoneNumber');
+        },
+        notifyAbout: function (message) {
+            return sendNotification(message, this.notificationTokens);
         }
     }
   });

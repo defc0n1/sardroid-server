@@ -11,15 +11,17 @@ const defaultOptions = {
 
 function sendNotification(contents, tokens) {
     return new Promise(function (resolve, reject) {
+        if (!tokens) {
+            return reject();
+        }
+
         const messageWithDefaults = _.defaults(contents, defaultOptions);
         const message = new gcm.Message(messageWithDefaults);
 
         sender.send(message, { registrationTokens: tokens }, function (err, response) {
             if (err) {
-                console.log(err);
                 reject(err);
             } else {
-                console.log(response);
                 resolve(response);
             }
         });
