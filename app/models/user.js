@@ -7,7 +7,8 @@ module.exports = function(sequelize, DataTypes) {
     password: DataTypes.STRING(1024),
     token: DataTypes.STRING(2048),
     contactsList: DataTypes.JSONB,
-    lastSeen: DataTypes.DATE
+    lastSeen: DataTypes.DATE,
+    notificationTokens: DataTypes.ARRAY(DataTypes.STRING)
   }, {
     classMethods: {
       associate: function(models) {
