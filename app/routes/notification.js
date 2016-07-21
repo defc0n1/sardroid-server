@@ -16,10 +16,10 @@ router.post('/register', verifyJWT, resolveUser, (req, res, next) => {
     if (token) {
         req.user.update({notificationTokens: [ token ]})
         .then(updatedUser => {
-
+            return res.send(200);
         })
         .catch(err => {
-            res.err(500);
+            return res.err(500);
         });
 
     } else {

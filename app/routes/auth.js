@@ -214,6 +214,8 @@ router.post('/resetpw',  (req, res, next) => {
             .then( userWithToken=> {
                 delete userWithToken.dataValues.password;
                 delete userWithToken.dataValues.contactsList;
+                delete userWithToken.dataValues.notificationTokens;
+
                 res.status(200).json(userWithToken);
             })
             .catch((err) => {

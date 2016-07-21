@@ -24,6 +24,7 @@ function signUserWithToken(user) {
     delete user.dataValues.password;
     delete user.dataValues.token;
     delete user.dataValues.contactsList;
+    delete user.dataValues.notificationTokens;
 
     return new Promise(function (resolve, reject) {
         jwt.sign(user.dataValues, config.jwt_secret, {
@@ -35,6 +36,7 @@ function signUserWithToken(user) {
             .then((user) => {
                 delete user.dataValues.password;
                 delete user.dataValues.contactsList;
+                delete user.dataValues.notificationTokens;
 
                 resolve(user);
             })
