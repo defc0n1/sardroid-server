@@ -4,6 +4,7 @@ import express from 'express';
 import models  from '../models';
 import { GENERIC, USER }          from '../utils/errorTypes.js';
 import { verifyJWT, resolveUser } from '../middleware';
+import { sendNotification }       from '../utils/pushNotifications';
 
 let User = models.User;
 
@@ -16,6 +17,9 @@ router.post('/notifications/register', verifyJWT, resolveUser, (req, res, next) 
     if (token) {
         req.user.update({notificationTokens: [ token ]})
         .then(updatedUser => {
+            return sendNotification({priority: 'high', data: { hello: 'world'}, notification: { title: "hallp", body: 'booody'}}, [ token ]);
+        })
+        .then(results => {
             return res.status(200).json({ message: 'Registered device token succesfully'});
         })
         .catch(err => {

@@ -29,6 +29,7 @@
     "ip": "^1.0.2",
     "jsonwebtoken": "^5.5.0",
     "lodash": "4.2.1",
+    "node-gcm": "0.14.3",
     "peer": "github:lyxsus/peerjs-server",
     "pg": "^4.4.3",
     "pg-hstore": "^2.3.2",

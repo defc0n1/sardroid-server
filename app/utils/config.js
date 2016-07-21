@@ -22,6 +22,9 @@ export default {
     },
     rollbar: {
             postToken    : process.env.ROLLBAR_TOKEN    || '',
+    },
+    notifications: {
+        apiToken         : process.env.GCM_API_TOKEN || ''
     }
 }
 
