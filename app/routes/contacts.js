@@ -80,7 +80,7 @@ router.get('/contacts', verifyJWT, resolveUser,  (req, res, next) => {
         })
         .catch (err => {
             // TODO: Correct error type here!
-            res.err(500, USER.CONTACTS.SAVE_ERROR, 'Error fetching contacts list!');
+            res.err(500, USER.CONTACTS.FETCH_ERROR, 'Error fetching contacts list!');
         });
 });
 
