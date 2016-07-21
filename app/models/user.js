@@ -21,7 +21,7 @@ module.exports = function(sequelize, DataTypes) {
             return _.map(this.contactsList, 'phoneNumber');
         },
         notifyAbout: function (message) {
-            return sendNotification(message, this.notificationTokens);
+            return sendNotification({ data: message }, this.notificationTokens);
         }
     }
   });

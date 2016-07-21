@@ -18,7 +18,7 @@ router.post('/', verifyJWT, resolveUser, (req, res, next) => {
         .then(user => {
             if (user) {
                 user.notifyAbout({ title: `Call from ${req.user.phoneNumber}`,
-                                   body: `Call from ${req.user.phoneNumber}` });
+                                   body: `Call from ${req.user.phoneNumber}` } );
                 res.status(201).json({ message: 'Notified user' });
             } else {
                 res.err(404, `User with number ${params.recipientNumber} not found`);
