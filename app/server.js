@@ -28,7 +28,7 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use('/auth', auth);
 app.use('/user', contacts);
 app.use('/user', user);
-app.use('/notifications', notifications);
+app.use('/user', notifications);
 
 export default app;
 
