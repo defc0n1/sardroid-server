@@ -42,6 +42,9 @@ const USER = {
         SAVE_ERROR    : 'save_error',
         FETCH_ERROR   : 'fetch_error',
         INVALID_STATE : 'invalid_state'
+    },
+    NOTIFICATIONS: {
+        SAVE_FAILED   : 'save_failed'
     }
 };
 

@@ -2,7 +2,7 @@
 
 import express from 'express';
 import models  from '../models';
-import { GENERIC }          from '../utils/errorTypes.js';
+import { GENERIC, USER }          from '../utils/errorTypes.js';
 import { verifyJWT, resolveUser } from '../middleware';
 
 let User = models.User;
@@ -16,10 +16,10 @@ router.post('/notifications/register', verifyJWT, resolveUser, (req, res, next) 
     if (token) {
         req.user.update({notificationTokens: [ token ]})
         .then(updatedUser => {
-            return res.send(200);
+            return res.status(200).json({ message: 'Registered device token succesfully'});
         })
         .catch(err => {
-            return res.err(500);
+            return res.err(400, USER.NOTIFICATIONS.SAVE_FAILED, 'Saving tokens failed!');
         });
 
     } else {
