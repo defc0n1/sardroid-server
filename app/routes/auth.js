@@ -104,7 +104,8 @@ router.post('/register', (req, res, next) => {
 
                 return User.create({
                     phoneNumber: vr.phoneNumber,
-                    password:    hash
+                    password:    hash,
+                    lastSeen:    Date.now()
                 });
             })
             .then((user) => {
