@@ -16,9 +16,6 @@ router.post('/notifications/register', verifyJWT, resolveUser, (req, res, next) 
 
     if (token) {
         req.user.update({notificationTokens: [ token ]})
-        .then(updatedUser => {
-            return sendNotification({priority: 'high', data: { hello: 'world'}, notification: { title: "hallp", body: 'booody'}}, [ token ]);
-        })
         .then(results => {
             return res.status(200).json({ message: 'Registered device token succesfully'});
         })
