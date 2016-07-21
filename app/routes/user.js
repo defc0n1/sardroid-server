@@ -9,7 +9,7 @@ let User = models.User;
 let router = express.Router();
 
 // Route to check if a user is registered
-router.get('/:phoneNumber/exists',  (req, res, next) => {
+router.get('/:phoneNumber/exists', verifyJWT, (req, res, next) => {
     let phoneNumber = req.params.phoneNumber.replace(/[+ ]/, '');
     let found = false;
 
