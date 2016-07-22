@@ -29,7 +29,7 @@ router.post('/', verifyJWT, resolveUser, (req, res, next) => {
         });
 
     } else {
-        res.err(400, GENERIC.MISSING_PARAMS, 'Token is missing!');
+        res.err(400, GENERIC.MISSING_PARAMS, 'Recipient number is missing!');
     }
 });
 

@@ -20,9 +20,9 @@ router.post('/notifications/register', verifyJWT, resolveUser, (req, res, next) 
             tokens.push(deviceToken);
         }
 
-        req.user.update({notificationTokens: tokens })
+        req.user.update({ notificationTokens: tokens })
         .then(results => {
-            return res.status(200).json({ message: 'Registered device token succesfully'});
+            return res.status(200).json({ message: 'Registered device token succesfully' });
         })
         .catch(err => {
             return res.err(400, USER.NOTIFICATIONS.SAVE_FAILED, 'Saving tokens failed!');
