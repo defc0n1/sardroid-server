@@ -13,6 +13,7 @@ let router = express.Router();
 
 router.post('/initiate', verifyJWT, resolveUser, (req, res, next) => {
     const params = req.body;
+    let recipientUser = null;
 
     if (params.recipientNumber) {
         User.findOne({ where: { phoneNumber: params.recipientNumber }})
@@ -21,6 +22,7 @@ router.post('/initiate', verifyJWT, resolveUser, (req, res, next) => {
                 user.notifyAbout({ title: `Call from ${req.user.phoneNumber}`,
                                    body: `Call from ${req.user.phoneNumber}` } );
 
+                recipientUser = user;
                 return Call.create({
                     startedAt: Date.now()
                 });
@@ -30,12 +32,13 @@ router.post('/initiate', verifyJWT, resolveUser, (req, res, next) => {
             }
         })
         .then(call =>  {
-            return call.addUsers([ user, req.params.user ]);
+            return call.addUsers([ recipientUser, req.user ]);
         })
         .then(callWithUsers => {
-            return res.status(201).json(callWithUsers);
+            return res.status(201).json(callWithUsers[0][0]);
         })
         .catch(err => {
+            console.log(err);
             res.err(500, 'Something went wrong!');
         });
 
