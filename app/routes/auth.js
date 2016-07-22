@@ -2,6 +2,7 @@
 
 import bcrypt       from 'bcryptjs';
 import express      from 'express';
+import _            from 'lodash';
 
 import generateRandomPin          from '../utils/generateRandomPin';
 import models                     from '../models';
@@ -229,15 +230,29 @@ router.post('/resetpw',  (req, res, next) => {
     }
 });
 
-router.delete('/logout', verifyJWT, resolveUser, (req, res, next) => {
-        req.user.update({ token: null })
-        .then( results => {
-            res.status(200).json({ message: 'Logged out succesfully' });
-        })
-        .catch(err => {
-            res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found');
-        })
-});
+function logoutHandler (req, res, next ) {
+    const deviceToken = req.body.deviceToken;
+
+    const updatedParams = { token: null };
+
+    if (deviceToken && req.user.notificationTokens) {
+        updatedParams.notificationTokens = _.pull(req.user.notificationTokens, deviceToken)
+    }
+
+    req.user.update(updatedParams)
+    .then( results => {
+        res.status(200).json({ message: 'Logged out succesfully' });
+    })
+    .catch(err => {
+        res.err(404, AUTH.LOGOUT.USER_NOT_FOUND, 'User not found');
+    })
+};
+
+// Both methods are available here for backwards compability
+// Old versions used delete, but the new one requires a put since
+// the possible notification token to be invalidated is sent as params
+router.delete('/logout', verifyJWT, resolveUser, logoutHandler);
+router.put('/logout', verifyJWT, resolveUser, logoutHandler);
 
 export default router;
 
