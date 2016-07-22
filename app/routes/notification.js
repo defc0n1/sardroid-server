@@ -12,10 +12,15 @@ let router = express.Router();
 
 // Route for registering device notification tokens
 router.post('/notifications/register', verifyJWT, resolveUser, (req, res, next) => {
-    const token = req.body.token;
+    const deviceToken = req.body.deviceToken;
 
-    if (token) {
-        req.user.update({notificationTokens: [ token ]})
+    if (deviceToken) {
+        let tokens = req.user.notificationTokens || [];
+        if (!tokens.includes(deviceToken)) {
+            tokens.push(deviceToken);
+        }
+
+        req.user.update({notificationTokens: tokens })
         .then(results => {
             return res.status(200).json({ message: 'Registered device token succesfully'});
         })
