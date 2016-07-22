@@ -49,15 +49,15 @@ router.post('/initiate', verifyJWT, resolveUser, (req, res, next) => {
 
 router.post('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
     const id = req.params.callID;
-    const finalStatus = req.params.finalStatus;
+    const finalStatus = req.body.finalStatus;
 
     if (id && finalStatus) {
         Call.findById(id)
         .then(call => {
-            call.update({
+            return call.update({
                 endedAt: Date.now(),
                 finalStatus
-            })
+            });
         })
         .then(updatedCall => {
             res.status(200).json(updatedCall);
