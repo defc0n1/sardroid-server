@@ -17,6 +17,7 @@ let router = express.Router();
 router.post('/initiate', verifyJWT, resolveUser, (req, res, next) => {
     const params = req.body;
     let recipientUser = null;
+    let createdCall  = null;
 
     if (params.recipientNumber) {
         User.findOne({ where: { phoneNumber: params.recipientNumber }})
@@ -35,10 +36,16 @@ router.post('/initiate', verifyJWT, resolveUser, (req, res, next) => {
             }
         })
         .then(call =>  {
-            return call.addUsers([ recipientUser, req.user ]);
+            createdCall = call;
+
+            return createdCall.addUser(recipientUser, { type: 'recipient'})
+        })
+        .then(call =>  {
+            return createdCall.addUser(req.user, { type: 'caller' })
         })
         .then(callWithUsers => {
-            return res.status(201).json(callWithUsers[0][0]);
+            console.log(createdCall);
+            return res.status(201).json(createdCall);
         })
         .catch(err => {
             console.log(err);
