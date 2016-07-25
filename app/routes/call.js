@@ -77,7 +77,7 @@ router.put('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
     }
 });
 
-router.get('/', (req, res, next) => {
+router.get('/', verifyJWT, resolveUser, (req, res, next) => {
 
     Call.findAll({
         where: {
@@ -88,7 +88,10 @@ router.get('/', (req, res, next) => {
                 {
                     callerId: { $eq: req.user.id }
                 }
-            ]
+            ],
+            finalStatus: {
+                $ne: null
+            }
         },
         include: [
             {
