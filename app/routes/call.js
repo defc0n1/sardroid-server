@@ -5,7 +5,7 @@ import models  from '../models';
 import _        from 'lodash';
 
 import { GENERIC }          from '../utils/errorTypes.js';
-import { verifyJWT, resolveUser, resolveCalls } from '../middleware';
+import { verifyJWT, resolveUser } from '../middleware';
 import { sendNotification }       from '../utils/pushNotifications';
 
 let User = models.User;
@@ -77,9 +77,19 @@ router.put('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
     }
 });
 
-router.get('/',  (req, res, next) => {
+router.get('/', (req, res, next) => {
 
     Call.findAll({
+        where: {
+            $or: [
+                {
+                    recipientId: { $eq: req.user.id }
+                },
+                {
+                    callerId: { $eq: req.user.id }
+                }
+            ]
+        },
         include: [
             {
                 model: User,
