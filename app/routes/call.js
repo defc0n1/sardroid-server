@@ -2,12 +2,15 @@
 
 import express from 'express';
 import models  from '../models';
+import _        from 'lodash';
+
 import { GENERIC }          from '../utils/errorTypes.js';
 import { verifyJWT, resolveUser } from '../middleware';
 import { sendNotification }       from '../utils/pushNotifications';
 
 let User = models.User;
 let Call = models.Call;
+let seq  = models.sequelize;
 
 let router = express.Router();
 
@@ -47,13 +50,22 @@ router.post('/initiate', verifyJWT, resolveUser, (req, res, next) => {
     }
 });
 
-router.post('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
+router.put('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
     const id = req.params.callID;
     const finalStatus = req.body.finalStatus;
 
     if (id && finalStatus) {
-        Call.findById(id)
+        Call.findById(id, { include: [ User ] })
         .then(call => {
+
+            let isPartOfCall =  _.some(call.Users, (user) => {
+                return user.dataValues.id === req.user.id;
+            });
+
+            if (!isPartOfCall) {
+                return res.err(403, 'You are not a participant in this call!');
+            }
+
             return call.update({
                 endedAt: Date.now(),
                 finalStatus
