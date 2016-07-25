@@ -18,8 +18,6 @@ let router = express.Router();
 
 router.post('/initiate', verifyJWT, resolveUser, (req, res, next) => {
     const params = req.body;
-    let recipientUser = null;
-    let createdCall  = null;
 
     if (params.recipientNumber) {
         User.findOne({ where: { phoneNumber: params.recipientNumber }})
@@ -28,25 +26,17 @@ router.post('/initiate', verifyJWT, resolveUser, (req, res, next) => {
                 user.notifyAbout({ title: `Call from ${req.user.phoneNumber}`,
                                    body: `Call from ${req.user.phoneNumber}` } );
 
-                recipientUser = user;
                 return Call.create({
-                    startedAt: Date.now()
+                    startedAt: Date.now(),
+                    callerId: req.user.id,
+                    recipientId: user.dataValues.id
                 });
 
             } else {
                 res.err(404, `User with number ${params.recipientNumber} not found`);
             }
         })
-        .then(call =>  {
-            createdCall = call;
-
-            return createdCall.addUser(recipientUser, { type: 'recipient'})
-        })
-        .then(call =>  {
-            return createdCall.addUser(req.user, { type: 'caller' })
-        })
-        .then(callWithUsers => {
-            console.log(createdCall);
+        .then(createdCall => {
             return res.status(201).json(createdCall);
         })
         .catch(err => {
@@ -64,14 +54,9 @@ router.put('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
     const finalStatus = req.body.finalStatus;
 
     if (id && finalStatus) {
-        Call.findById(id, { include: [ User ] })
+        Call.findById(id)
         .then(call => {
-
-            let isPartOfCall =  _.some(call.Users, (user) => {
-                return user.dataValues.id === req.user.id;
-            });
-
-            if (!isPartOfCall) {
+            if (!call.dataValues.callerId === req.user.id) {
                 return res.err(403, 'You are not a participant in this call!');
             }
 
@@ -84,6 +69,7 @@ router.put('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
             res.status(200).json(updatedCall);
         })
         .catch(err => {
+            console.log(err);
             res.err(500, 'Something went wrong!');
         });
     } else {
@@ -91,21 +77,24 @@ router.put('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
     }
 });
 
-router.get('/', resolveCalls,  (req, res, next) => {
-    const callIDs = req.calls.map( call => {
-        return call.dataValues.CallId
-    });
+router.get('/',  (req, res, next) => {
 
-    seq.query(`
-              SELECT "Users"."phoneNumber", "Users"."id" AS "userID", "Calls"."finalStatus", "UserCalls"."type", "Calls"."startedAt", "Calls"."endedAt"
-              FROM "Calls" JOIN "UserCalls" ON "UserCalls"."CallId" = "Calls"."id"
-              JOIN "Users" ON "Users"."id" = "UserCalls"."UserId"
-              WHERE "Calls"."finalStatus" IS NOT NULL
-              AND "Calls".id IN (${ callIDs.join() })
-              ORDER BY "Calls"."startedAt";`,
-              { type: seq.QueryTypes.SELECT })
-    .then( call => {
-        res.json(call);
+    Call.findAll({
+        include: [
+            {
+                model: User,
+                as: 'recipient',
+                attribute: ['phoneNumber']
+            },
+            {
+                model: User,
+                as: 'caller',
+                attribute: ['phoneNumber']
+            }
+        ]
+    })
+    .then( calls => {
+        res.json(calls);
     })
     .catch( err => {
         res.err(500, err);

@@ -10,13 +10,22 @@ module.exports = {
       return queryInterface.createTable('users', { id: Sequelize.INTEGER });
     */
    return queryInterface.addColumn(
-       'UserCall',
-       'type',
+       'Calls',
+       'callerId',
        {
-        type: Sequelize.ENUM,
-        values: ['caller', 'recipient']
+           type: Sequelize.INTEGER,
+           allowNull: false
        }
-   );
+   ).then(function () {
+       return queryInterface.addColumn(
+           'Calls',
+           'recipientId',
+           {
+               type: Sequelize.INTEGER,
+               allowNull: false
+           }
+       );
+   });
   },
 
   down: function (queryInterface, Sequelize) {
@@ -27,6 +36,9 @@ module.exports = {
       Example:
       return queryInterface.dropTable('users');
     */
-    return queryInterface.removeColumn('UserCall', 'type');
+    return queryInterface.removeColumn('Calls', 'callerId')
+    .then(function () {
+        return queryInterface.removeColumn('Calls', 'recipientId')
+    })
   }
 };
