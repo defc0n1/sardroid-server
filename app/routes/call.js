@@ -5,11 +5,13 @@ import models  from '../models';
 import _        from 'lodash';
 
 import { GENERIC }          from '../utils/errorTypes.js';
-import { verifyJWT, resolveUser } from '../middleware';
+import { verifyJWT, resolveUser, resolveCalls } from '../middleware';
 import { sendNotification }       from '../utils/pushNotifications';
 
 let User = models.User;
 let Call = models.Call;
+let UserCall = models.UserCall;
+
 let seq  = models.sequelize;
 
 let router = express.Router();
@@ -87,6 +89,27 @@ router.put('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
     } else {
         res.err(400, GENERIC.MISSING_PARAMS, 'Call ID or finalStatus is missing!');
     }
+});
+
+router.get('/', resolveCalls,  (req, res, next) => {
+    const callIDs = req.calls.map( call => {
+        return call.dataValues.CallId
+    });
+
+    seq.query(`
+              SELECT "Users"."phoneNumber", "Users"."id" AS "userID", "Calls"."finalStatus", "UserCalls"."type", "Calls"."startedAt", "Calls"."endedAt"
+              FROM "Calls" JOIN "UserCalls" ON "UserCalls"."CallId" = "Calls"."id"
+              JOIN "Users" ON "Users"."id" = "UserCalls"."UserId"
+              WHERE "Calls"."finalStatus" IS NOT NULL
+              AND "Calls".id IN (${ callIDs.join() })
+              ORDER BY "Calls"."startedAt";`,
+              { type: seq.QueryTypes.SELECT })
+    .then( call => {
+        res.json(call);
+    })
+    .catch( err => {
+        res.err(500, err);
+    })
 });
 
 export default router;
