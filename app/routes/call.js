@@ -84,12 +84,12 @@ router.get('/',  (req, res, next) => {
             {
                 model: User,
                 as: 'recipient',
-                attribute: ['phoneNumber']
+                attributes: ['phoneNumber']
             },
             {
                 model: User,
                 as: 'caller',
-                attribute: ['phoneNumber']
+                attributes: ['phoneNumber']
             }
         ]
     })
