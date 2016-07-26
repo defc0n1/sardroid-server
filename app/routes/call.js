@@ -104,6 +104,9 @@ router.get('/', verifyJWT, resolveUser, (req, res, next) => {
                 as: 'caller',
                 attributes: ['phoneNumber']
             }
+        ],
+        order: [
+            ['startedAt', 'DESC']
         ]
     })
     .then( calls => {
