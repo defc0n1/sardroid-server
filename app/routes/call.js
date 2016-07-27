@@ -78,8 +78,10 @@ router.put('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
 });
 
 router.get('/', verifyJWT, resolveUser, (req, res, next) => {
+    const offset = req.query.offset;
+    const limit = req.query.limit;
 
-    Call.findAll({
+    const queryOpts = {
         where: {
             $or: [
                 {
@@ -108,7 +110,14 @@ router.get('/', verifyJWT, resolveUser, (req, res, next) => {
         order: [
             ['startedAt', 'DESC']
         ]
-    })
+    };
+
+    if (offset && limit) {
+        queryOpts.offset = offset;
+        queryOpts.limit = limit;
+    }
+
+    Call.findAll(queryOpts)
     .then( calls => {
         res.json(calls);
     })
