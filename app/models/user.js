@@ -7,6 +7,7 @@ module.exports = function(sequelize, DataTypes) {
     phoneNumber: { type: DataTypes.STRING, unique: true },
     password: DataTypes.STRING(1024),
     token: DataTypes.STRING(2048),
+    peerJSId: DataTypes.STRING,
     contactsList: DataTypes.JSONB,
     lastSeen: DataTypes.DATE,
     notificationTokens: DataTypes.ARRAY(DataTypes.STRING)
