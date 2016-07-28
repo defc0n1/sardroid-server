@@ -1,9 +1,9 @@
 'use strict';
 
+import _ from 'lodash';
+
 import { log, LOG_TYPES } from './log';
-
 import config from './config';
-
 import { io, EVENT_TYPES } from './socketIO';
 
 let peerJSConnections = [];
@@ -36,12 +36,11 @@ function createPeerJS (server, app) {
     ExpressPeerServer.on('disconnect', (id) => {
         log('PeerJS Disconnection from: ' + id, LOG_TYPES.WARN);
 
-        const data = getPeerJSData(id);
-        let i = peerJSConnections.indexOf(data);
+        const removed = _.remove(peerJSConnections, connection => {
+            return connection.peerJSId = id;
+        });
 
-        peerJSConnections.splice(i, 1);
-
-        io.emit(EVENT_TYPES.CONTACT_OFFLINE, data );
+        io.emit(EVENT_TYPES.CONTACT_OFFLINE, removed );
     });
 
     app.use('/peerjs', ExpressPeerServer);

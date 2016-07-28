@@ -56,7 +56,6 @@ router.post('/contacts', verifyJWT, resolveUser, (req, res, next) => {
 });
 
 router.get('/contacts', verifyJWT, resolveUser,  (req, res, next) => {
-
         let contactsList  = req.user.contactsList || [];
         const numbersOnly = req.user.getContactsListNumbers();
 
