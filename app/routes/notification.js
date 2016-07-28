@@ -1,6 +1,7 @@
 'use strict';
 
 import express from 'express';
+import _       from 'lodash';
 import models  from '../models';
 import { GENERIC, USER }          from '../utils/errorTypes.js';
 import { verifyJWT, resolveUser } from '../middleware';
@@ -15,8 +16,13 @@ router.post('/notifications/register', verifyJWT, resolveUser, (req, res, next) 
     const deviceToken = req.body.deviceToken;
 
     if (deviceToken) {
-        let tokens = req.user.notificationTokens || [];
-        if (!tokens.includes(deviceToken)) {
+        let tokens = [];
+
+        if (req.user.dataValues.notificationTokens) {
+            tokens = req.user.dataValues.notificationTokens;
+        }
+
+        if (! _.includes(deviceToken, tokens)) {
             tokens.push(deviceToken);
         }
 
