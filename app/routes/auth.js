@@ -28,7 +28,7 @@ router.post('/verification', (req, res, next) => {
            return next();
         }
 
-        User.findOne({where: {phoneNumber: params.phoneNumber}}).then((user) => {
+        User.findOne({where: { phoneNumber: params.phoneNumber}}).then((user) => {
 
             if (user && params.verificationType === VERIFICATION_TYPES.REGISTER) {
                 res.err(400, AUTH.VERIFICATION.USER_EXISTS, 'User already exists');

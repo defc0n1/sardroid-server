@@ -61,14 +61,18 @@ router.get('/contacts', verifyJWT, resolveUser,  (req, res, next) => {
         const numbersOnly = req.user.getContactsListNumbers();
 
         return User.findAll({
-            attributes: ['phoneNumber', 'lastSeen'],
+            attributes: ['phoneNumber', 'lastSeen', 'peerJSId'],
             where: { phoneNumber: { $in: numbersOnly}}
         })
         .then( results => {
             // Add additional property to each contact, stating whether or not they're currently online or not
             let listWithState =  _.map(contactsList, contact => {
-                contact.currentState = _.includes(peerJSConnections, contact.phoneNumber) ? contactStates.ONLINE : contactStates.OFFLINE
-                contact.lastSeen = _.find(results, {'phoneNumber': contact.phoneNumber}).lastSeen;
+                const contactFromDB = _.find(results, { phoneNumber: contact.phoneNumber });
+
+                contact.currentState = _.some(peerJSConnections, { phoneNumber: contact.phoneNumber }) ? contactStates.ONLINE : contactStates.OFFLINE
+                contact.lastSeen = contactFromDB.lastSeen;
+                contact.peerJSId = contactFromDB.peerJSId;
+
                 return contact;
             });
 
