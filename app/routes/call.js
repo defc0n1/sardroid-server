@@ -23,7 +23,7 @@ router.post('/initiate', verifyJWT, resolveUser, (req, res, next) => {
         User.findOne({ where: { phoneNumber: params.recipientNumber }})
         .then(user => {
             if (user) {
-                user.notifyAbout({ title: `Call from ${req.user.phoneNumber}`,
+                user.notifyAbout({ title: `SoAR! - Call from ${req.user.phoneNumber}`,
                                    body: `Call from ${req.user.phoneNumber}` } );
 
                 return Call.create({
