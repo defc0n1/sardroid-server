@@ -62,7 +62,7 @@ router.put('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
 
             const callOpts = {
                 endedAt: Date.now(),
-                finalStatus
+                finalStatus: finalStatus
             }
 
             // We can assume the call has been seen by the recipient if they answered it
@@ -123,6 +123,26 @@ router.get('/', verifyJWT, resolveUser, (req, res, next) => {
         queryOpts.offset = offset;
         queryOpts.limit = limit;
     }
+
+    Call.findAll(queryOpts)
+    .then( calls => {
+        res.json(calls);
+    })
+    .catch( err => {
+        res.err(500, err);
+    })
+});
+
+router.get('/not_seen', verifyJWT, resolveUser, (req, res, next) => {
+    const queryOpts = {
+        where: {
+            recipientId : req.user.id,
+            missedCallBeenSeen : false,
+            finalStatus: {
+                $ne: null
+            }
+        }
+    };
 
     Call.findAll(queryOpts)
     .then( calls => {
