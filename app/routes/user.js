@@ -4,10 +4,9 @@ import express from 'express';
 import _       from 'lodash';
 import crypto  from 'crypto';
 
-import models                     from '../models';
-import { verifyJWT, resolveUser } from '../middleware';
-import { connections, EVENT_TYPES }            from '../utils/socketIO';
-import {log} from '../utils/log'
+import models                       from '../models';
+import { verifyJWT, resolveUser }   from '../middleware';
+import { connections, EVENT_TYPES } from '../utils/socketIO';
 
 let User = models.User;
 
