@@ -14,6 +14,10 @@ module.exports = function(sequelize, DataTypes) {
     finalStatus:  {
         type: DataTypes.ENUM,
         values: ['not_answered', 'succeeded', 'error']
+    },
+    missedCallBeenSeen: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true
     }
   }, {
     classMethods: {

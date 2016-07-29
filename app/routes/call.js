@@ -60,10 +60,17 @@ router.put('/:callID/end', verifyJWT, resolveUser, (req, res, next) => {
                 return res.err(403, 'You are not a participant in this call!');
             }
 
-            return call.update({
+            const callOpts = {
                 endedAt: Date.now(),
                 finalStatus
-            });
+            }
+
+            // We can assume the call has been seen by the recipient if they answered it
+            if (finalStatus === 'not_answered') {
+                callOpts.missedCallBeenSeen = false;
+            }
+
+            return call.update(callOpts);
         })
         .then(updatedCall => {
             res.status(200).json(updatedCall);
