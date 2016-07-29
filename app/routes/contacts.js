@@ -75,6 +75,7 @@ router.get('/contacts', verifyJWT, resolveUser,  (req, res, next) => {
                 return contact;
             });
 
+
             let sortedList = _.sortBy(listWithState, contact => {
                 return -contact.lastSeen;
             });

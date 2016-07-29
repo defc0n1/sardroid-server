@@ -37,7 +37,7 @@ function createPeerJS (server, app) {
         log('PeerJS Disconnection from: ' + id, LOG_TYPES.WARN);
 
         const removed = _.remove(peerJSConnections, connection => {
-            return connection.peerJSId = id;
+            return connection.peerJSId === id;
         });
 
         io.emit(EVENT_TYPES.CONTACT_OFFLINE, removed );
