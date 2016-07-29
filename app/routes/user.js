@@ -7,6 +7,7 @@ import crypto  from 'crypto';
 import models                     from '../models';
 import { verifyJWT, resolveUser } from '../middleware';
 import { connections, EVENT_TYPES }            from '../utils/socketIO';
+import {log} from '../utils/log'
 
 let User = models.User;
 
@@ -34,12 +35,11 @@ router.get('/generatePeerId', verifyJWT, resolveUser, (req, res, next) => {
     const peerJSId = `${phoneNumber}PEER${crypto.randomBytes(10).toString('hex')}`;
 
     const currentSocket = _.find(connections, socket => {
-        return socket.user.id = id;
+        return socket.user.id === id;
     });
 
     if (currentSocket) {
         currentSocket.emit(EVENT_TYPES.ALREADY_LOGGED_IN, {});
-        currentSocket.disconnect(true);
     }
 
     req.user.update({ peerJSId })
