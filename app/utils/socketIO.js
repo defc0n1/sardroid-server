@@ -11,14 +11,15 @@ import models             from '../models';
 const User = models.User;
 
 const EVENT_TYPES = {
-    DISCONNECT      : 'disconnect',
-    CONNECTION      : 'connection',
-    TOKEN_VALID     : 'token_valid',
-    TOKEN_INVALID   : 'token_invalid',
-    CONTACT_ONLINE  : 'contact:online',
-    CONTACT_OFFLINE : 'contact:offline',
-    HEARTBEAT_PONG  : 'heartbeat_pong',
-    HEARTBEAT_PING  : 'heartbeat_ping'
+    DISCONNECT        : 'disconnect',
+    CONNECTION        : 'connection',
+    TOKEN_VALID       : 'token_valid',
+    TOKEN_INVALID     : 'token_invalid',
+    CONTACT_ONLINE    : 'contact:online',
+    CONTACT_OFFLINE   : 'contact:offline',
+    ALREADY_LOGGED_IN : 'already_logged_in',
+    HEARTBEAT_PONG    : 'heartbeat_pong',
+    HEARTBEAT_PING    : 'heartbeat_ping'
 };
 
 let io;

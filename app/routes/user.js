@@ -1,9 +1,12 @@
 'use strict';
 
 import express from 'express';
-import models  from '../models';
+import _       from 'lodash';
+import crypto  from 'crypto';
+
+import models                     from '../models';
 import { verifyJWT, resolveUser } from '../middleware';
-import crypto from 'crypto';
+import { connections, EVENT_TYPES }            from '../utils/socketIO';
 
 let User = models.User;
 
@@ -25,7 +28,19 @@ router.get('/:phoneNumber/exists', verifyJWT, (req, res, next) => {
 });
 
 router.get('/generatePeerId', verifyJWT, resolveUser, (req, res, next) => {
-    const peerJSId = `${req.user.phoneNumber}PEER${crypto.randomBytes(10).toString('hex')}`;
+    // PeerJS only allows alphanumeric characters in it's ID
+    const phoneNumber = req.user.phoneNumber;
+    const id = req.user.id;
+    const peerJSId = `${phoneNumber}PEER${crypto.randomBytes(10).toString('hex')}`;
+
+    const currentSocket = _.find(connections, socket => {
+        return socket.user.id = id;
+    });
+
+    if (currentSocket) {
+        currentSocket.emit(EVENT_TYPES.ALREADY_LOGGED_IN, {});
+        currentSocket.disconnect(true);
+    }
 
     req.user.update({ peerJSId })
     .then((results) => {
