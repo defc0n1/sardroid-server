@@ -154,13 +154,21 @@ router.get('/not_seen', verifyJWT, resolveUser, (req, res, next) => {
 });
 
 router.put('/mark_seen', verifyJWT, resolveUser, (req, res, next) => {
-    var callIDs = req.body.calls.reduce( (calls, call) => {
+
+    const calls = req.body.calls;
+
+    if (!calls) {
+        res.err(400, GENERIC.MISSING_PARAMS, 'Calls are missing from request!');
+        return next();
+    }
+
+    const callIDs = calls.reduce( (reducedCalls, call) => {
 
         if (call.recipientId === req.user.id) {
-            calls.push(call.id);
+            reducedCalls.push(call.id);
         }
 
-        return calls;
+        return reducedCalls;
     }, []);
 
 
@@ -168,8 +176,8 @@ router.put('/mark_seen', verifyJWT, resolveUser, (req, res, next) => {
                 { where: { id: { $in: callIDs } } })
         .then( results => {
             res.status(201).json(results);
-        }).
-        catch( err => {
+        })
+        .catch( err => {
             res.err(500, 'Updating call seen status failed');
         })
 });
