@@ -153,5 +153,18 @@ router.get('/not_seen', verifyJWT, resolveUser, (req, res, next) => {
     })
 });
 
+router.put('/mark_seen', verifyJWT, resolveUser, (req, res, next) => {
+    var callIDs = req.body.calls.reduce( (calls, call) => {
+
+        if (call.recipientId === req.user.id) {
+            calls.push(call.id);
+        }
+
+        return calls;
+    }, []);
+
+    console.log(callIDs);
+});
+
 export default router;
 
