@@ -89,6 +89,7 @@ router.get('/', verifyJWT, resolveUser, (req, res, next) => {
     const limit = req.query.limit;
 
     const queryOpts = {
+        attributes: ['id', 'finalStatus', 'startedAt', 'recipientId', 'callerId', 'missedCallBeenSeen'],
         where: {
             $or: [
                 {
@@ -135,6 +136,7 @@ router.get('/', verifyJWT, resolveUser, (req, res, next) => {
 
 router.get('/not_seen', verifyJWT, resolveUser, (req, res, next) => {
     const queryOpts = {
+        attributes: ['id'],
         where: {
             recipientId : req.user.id,
             missedCallBeenSeen : false,
