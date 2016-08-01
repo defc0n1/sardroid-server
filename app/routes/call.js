@@ -163,7 +163,15 @@ router.put('/mark_seen', verifyJWT, resolveUser, (req, res, next) => {
         return calls;
     }, []);
 
-    console.log(callIDs);
+
+    Call.update({ missedCallBeenSeen: true },
+                { where: { id: { $in: callIDs } } })
+        .then( results => {
+            res.status(201).json(results);
+        }).
+        catch( err => {
+            res.err(500, 'Updating call seen status failed');
+        })
 });
 
 export default router;
