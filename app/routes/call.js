@@ -89,7 +89,7 @@ router.get('/', verifyJWT, resolveUser, (req, res, next) => {
     const limit = req.query.limit;
 
     const queryOpts = {
-        attributes: ['id', 'finalStatus', 'startedAt', 'recipientId', 'callerId', 'missedCallBeenSeen'],
+        attributes: ['id', 'finalStatus', 'startedAt', 'endedAt', 'recipientId', 'callerId', 'missedCallBeenSeen'],
         where: {
             $or: [
                 {
