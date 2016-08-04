@@ -18,8 +18,10 @@ router.post('/notifications/register', verifyJWT, resolveUser, (req, res, next) 
     if (deviceToken) {
         let tokens = [];
 
-        if (req.user.dataValues.notificationTokens) {
+        if (req.user.dataValues.notificationTokens && req.user.dataValues.notificationTokens.length > 0) {
             tokens = req.user.dataValues.notificationTokens;
+        } else {
+            tokens = [ deviceToken ]
         }
 
         if (! _.includes(deviceToken, tokens)) {
